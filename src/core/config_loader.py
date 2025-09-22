@@ -2,7 +2,6 @@
 Модуль для загрузки конфигураций из JSON файлов
 """
 import json
-import os
 from typing import Dict, Any
 from pathlib import Path
 

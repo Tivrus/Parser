@@ -3,12 +3,12 @@
     {
       "name": "File",
       "id": "top_bar_menu_File",
-      "position_ru": 0,
-      "position_en": 0,
       "items": [
         {"type": "button", "id": "top_bar_submenu_New", "icon": "New.png"},
         {"type": "button", "id": "top_bar_submenu_Open", "icon": "Open.png"},
-        {"type": "button", "id": "top_bar_submenu_OpenRecent", "icon": "OpenRecent.png"},
+        {"type": "menu", "id": "top_bar_submenu_OpenRecent", "icon": "OpenRecent.png", "items": [
+          
+        ]},
         {"type": "separator"},
         {"type": "button", "id": "top_bar_submenu_Save", "icon": "Save.png"},
         {"type": "button", "id": "top_bar_submenu_SaveAs", "icon": "SaveAs.png"},
@@ -24,8 +24,6 @@
     {
       "name": "Edit",
       "id": "top_bar_menu_Edit",
-      "position_ru": 50,
-      "position_en": 40,
       "items": [
         {"type": "button", "id": "top_bar_submenu_Undo", "icon": "Undo.png"},
         {"type": "button", "id": "top_bar_submenu_Redo", "icon": "Redo.png"},
@@ -44,8 +42,6 @@
     {
       "name": "View",
       "id": "top_bar_menu_View",
-      "position_ru": 108,
-      "position_en": 82,
       "items": [
         {"type": "button", "id": "top_bar_submenu_Zoom_In", "icon": "ZoomIn.png"},
         {"type": "button", "id": "top_bar_submenu_Zoom_Out", "icon": "ZoomOut.png"},
@@ -60,8 +56,6 @@
     {
       "name": "Tools",
       "id": "top_bar_menu_Tools",
-      "position_ru": 149,
-      "position_en": 129,
       "items": [
         {"type": "button", "id": "top_bar_submenu_Inspector_Mode", "icon": "InspectorMode.png"},
         {"type": "separator"},
@@ -76,8 +70,6 @@
     {
       "name": "Help",
       "id": "top_bar_menu_Help",
-      "position_ru": 239,
-      "position_en": 178,
       "items": [
         {"type": "button", "id": "top_bar_submenu_Documentation", "icon": "Documentation.png"},
         {"type": "button", "id": "top_bar_submenu_About_App", "icon": "AboutApp.png"},

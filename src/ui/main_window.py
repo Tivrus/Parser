@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel
 from PyQt6.QtCore import Qt
 from ..core.theme_manager import _THEME
 from ..core.window_router import WindowRouter
+from ..core.title_manager import _TITLE_MANAGER
 from .menu_system import MenuSystem
 
 
@@ -14,15 +15,21 @@ class MainWindow(QMainWindow):
     def __init__(self):
         """Инициализация главного окна"""
         super().__init__()
-        self.setWindowTitle("Parser Bot 1.0")
         self.setGeometry(100, 100, 1200, 800)
         
         # Инициализируем компоненты
         self.menu_system = MenuSystem(self, language="ru")
         self.window_router = WindowRouter()
         
+        # Устанавливаем TitleManager
+        _TITLE_MANAGER.set_main_window(self)
+        _TITLE_MANAGER.new_project()  # Создаем новый проект по умолчанию
+        
         self.setup_ui()
         self.apply_theme()
+        
+        # Разворачиваем окно на весь экран
+        self.showMaximized()
     
     def setup_ui(self):
         """Настройка пользовательского интерфейса"""

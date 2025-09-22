@@ -1,8 +1,7 @@
 """
 Менеджер тем приложения
 """
-import os
-from typing import Dict, Any
+from typing import Dict
 from pathlib import Path
 from .config_loader import load_color_schemes
 

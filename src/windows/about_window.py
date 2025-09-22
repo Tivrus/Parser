@@ -10,20 +10,14 @@ class AboutWindow(BaseWindow):
     
     def __init__(self, parent=None, width=480, height=560):
         """Инициализация окна "О программе" """
-        super().__init__(parent, "О программе", width, height)
+        super().__init__(parent, "О приложении", width, height)
     
     def create_content(self):
-        """Создает содержимое окна "О программе" """
         content = super().create_content()
         layout = QVBoxLayout(content)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
-        
-        # Add about content
-        title_label = QLabel("О программе")
-        title_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 16px;")
-        layout.addWidget(title_label)
-        
+           
         info_text = QLabel("""
         <p><b>Parser Bot 1.0</b></p>
         <p>Версия: 1.0.0</p>

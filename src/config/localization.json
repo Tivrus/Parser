@@ -1,13 +1,10 @@
 {
   "ru": {
     "top_bar_menu_File": "Файл",
-    "top_bar_menu_Edit": "Правка",
-    "top_bar_menu_View": "Вид",
-    "top_bar_menu_Tools": "Инструменты",
-    "top_bar_menu_Help": "Справка",
+    
     "top_bar_submenu_New": "Новый",
     "top_bar_submenu_Open": "Открыть",
-    "top_bar_submenu_OpenRecent": "Открыть недавние",
+    "top_bar_submenu_OpenRecent": "Открыть последний",
     "top_bar_submenu_Save": "Сохранить",
     "top_bar_submenu_SaveAs": "Сохранить как",
     "top_bar_submenu_AutoSave": "Автосохранение",
@@ -15,37 +12,59 @@
     "top_bar_submenu_Import": "Импорт",
     "top_bar_submenu_Export": "Экспорт",
     "top_bar_submenu_Exit": "Выход",
+    
+
+
+    "top_bar_menu_Edit": "Правка",
+
     "top_bar_submenu_Undo": "Отменить",
-    "top_bar_submenu_Redo": "Повторить",
+    "top_bar_submenu_Redo": "Вернуть",
     "top_bar_submenu_Cut": "Вырезать",
     "top_bar_submenu_Copy": "Копировать",
     "top_bar_submenu_Paste": "Вставить",
+    "top_bar_submenu_Delete_Block": "Удалить выделенный блок",
     "top_bar_submenu_Select_All_Blocks": "Выделить все блоки",
-    "top_bar_submenu_Delete_Block": "Удалить блок",
     "top_bar_submenu_Clear_Workspace": "Очистить рабочую область",
     "top_bar_submenu_Preferences": "Настройки",
-    "top_bar_submenu_Zoom_In": "Увеличить",
-    "top_bar_submenu_Zoom_Out": "Уменьшить",
-    "top_bar_submenu_Reset_Zoom": "Сброс зума",
+    
+
+
+    "top_bar_menu_View": "Вид",
+
+    "top_bar_submenu_Zoom_In": "Увеличить масштаб",
+    "top_bar_submenu_Zoom_Out": "Уменьшить масштаб",
+    "top_bar_submenu_Reset_Zoom": "Сбросить масштаб",
     "top_bar_submenu_Toggle_Grid": "Показать сетку",
-    "top_bar_submenu_Toggle_Snap_to_Grid": "Привязка к сетке",
+    "top_bar_submenu_Toggle_Snap_to_Grid": "Показать привязку к сетке",
     "top_bar_submenu_Light_Theme": "Светлая тема",
+    "top_bar_submenu_Dark_Theme": "Тёмная тема",
+    
+
+    
+    "top_bar_menu_Tools": "Инструменты",
+
     "top_bar_submenu_Inspector_Mode": "Режим инспектора",
     "top_bar_submenu_Run_Script": "Запустить скрипт",
     "top_bar_submenu_Stop_Execution": "Остановить выполнение",
-    "top_bar_submenu_Auto_Align_Blocks": "Автовыравнивание блоков",
-    "top_bar_submenu_Open_Dev_Tools": "Инструменты разработчика",
+    "top_bar_submenu_Auto_Align_Blocks": "Автоматически выровнять блоки",
+    "top_bar_submenu_Open_Dev_Tools": "Открыть Dev Tools",
     "top_bar_submenu_Reload_Site": "Перезагрузить сайт",
+
+
+
+    "top_bar_menu_Help": "Помощь",
+
     "top_bar_submenu_Documentation": "Документация",
-    "top_bar_submenu_About_App": "О программе",
-    "top_bar_submenu_Check_Updates": "Проверить обновления"
-  },
+    "top_bar_submenu_About_App": "О приложении",
+    "top_bar_submenu_Check_Updates": "Проверить обновления",
+    "top_bar_submenu_Recent_Files": "Недавние файлы",
+    "top_bar_submenu_Templates": "Шаблоны",
+    "top_bar_submenu_New_Template": "Новый шаблон",
+    "top_bar_submenu_Load_Template": "Загрузить шаблон"
+    },
   "en": {
     "top_bar_menu_File": "File",
-    "top_bar_menu_Edit": "Edit",
-    "top_bar_menu_View": "View",
-    "top_bar_menu_Tools": "Tools",
-    "top_bar_menu_Help": "Help",
+
     "top_bar_submenu_New": "New",
     "top_bar_submenu_Open": "Open",
     "top_bar_submenu_OpenRecent": "Open Recent",
@@ -56,29 +75,54 @@
     "top_bar_submenu_Import": "Import",
     "top_bar_submenu_Export": "Export",
     "top_bar_submenu_Exit": "Exit",
+
+
+
+    "top_bar_menu_Edit": "Edit",
+
     "top_bar_submenu_Undo": "Undo",
     "top_bar_submenu_Redo": "Redo",
-    "top_bar_submenu_Cut": "Cut",
-    "top_bar_submenu_Copy": "Copy",
     "top_bar_submenu_Paste": "Paste",
+    "top_bar_submenu_Copy": "Copy",
+    "top_bar_submenu_Cut": "Cut",
+    "top_bar_submenu_Duplicate_Block": "Duplicate selected block",
+    "top_bar_submenu_Delete_Block": "Delete selected block",
     "top_bar_submenu_Select_All_Blocks": "Select all blocks",
-    "top_bar_submenu_Delete_Block": "Delete block",
     "top_bar_submenu_Clear_Workspace": "Clear workspace",
     "top_bar_submenu_Preferences": "Preferences",
-    "top_bar_submenu_Zoom_In": "Zoom in",
-    "top_bar_submenu_Zoom_Out": "Zoom out",
-    "top_bar_submenu_Reset_Zoom": "Reset zoom",
-    "top_bar_submenu_Toggle_Grid": "Toggle grid",
-    "top_bar_submenu_Toggle_Snap_to_Grid": "Snap to grid",
-    "top_bar_submenu_Light_Theme": "Light theme",
-    "top_bar_submenu_Inspector_Mode": "Inspector mode",
-    "top_bar_submenu_Run_Script": "Run script",
-    "top_bar_submenu_Stop_Execution": "Stop execution",
-    "top_bar_submenu_Auto_Align_Blocks": "Auto align blocks",
-    "top_bar_submenu_Open_Dev_Tools": "Open dev tools",
-    "top_bar_submenu_Reload_Site": "Reload site",
+    
+    
+
+    "top_bar_menu_View": "View",
+
+    "top_bar_submenu_Zoom_In": "Zoom In",
+    "top_bar_submenu_Zoom_Out": "Zoom Out",
+    "top_bar_submenu_Reset_Zoom": "Reset Zoom",
+    "top_bar_submenu_Toggle_Grid": "Toggle Grid",
+    "top_bar_submenu_Toggle_Snap_to_Grid": "Toggle Snap to Grid",
+    "top_bar_submenu_Light_Theme": "Light Theme",
+    
+    
+
+    "top_bar_menu_Tools": "Tools",  
+
+    "top_bar_submenu_Inspector_Mode": "Inspector Mode",
+    "top_bar_submenu_Run_Script": "Run Script",
+    "top_bar_submenu_Stop_Execution": "Stop Execution",
+    "top_bar_submenu_Auto_Align_Blocks": "Auto Align Blocks",
+    "top_bar_submenu_Open_Dev_Tools": "Open Dev Tools",
+    "top_bar_submenu_Reload_Site": "Reload Site",
+    
+
+
+    "top_bar_menu_Help": "Help",
+
     "top_bar_submenu_Documentation": "Documentation",
-    "top_bar_submenu_About_App": "About app",
-    "top_bar_submenu_Check_Updates": "Check updates"
+    "top_bar_submenu_About_App": "About App",
+    "top_bar_submenu_Check_Updates": "Check Updates",
+    "top_bar_submenu_Recent_Files": "Recent Files",
+    "top_bar_submenu_Templates": "Templates",
+    "top_bar_submenu_New_Template": "New Template",
+    "top_bar_submenu_Load_Template": "Load Template"
   }
 }

@@ -48,31 +48,31 @@
   },
   "light": {
     "main_window": {
-      "background": "#FFFFFF",
+      "background": "#fffeeb",
       "text": "#333333",
       "secondary_text": "#666666"
     },
     "top_menu_bar": {
-      "background": "#F3F3F3",
+      "background": "#f1f0dd",
       "text": "#333333",
-      "hover": "#E1E1E1",
+      "hover": "#DFE8EC",
       "click": "#D1D1D1"
     },
     "menu_item": {
       "background": "transparent",
       "text": "#333333",
-      "hover": "#E5F3FF",
+      "hover": "#DFE8EC",
       "click": "#CCE8FF"
     },
     "submenu_container": {
-      "background": "#FFFFFF",
+      "background": "#f8f7e4",
       "border": "#CCCCCC",
       "shadow": "#00000020"
     },
     "submenu_button": {
       "background": "transparent",
       "text": "#333333",
-      "hover": "#E5F3FF",
+      "hover": "#DFE8EC",
       "click": "#CCE8FF",
       "icon_tint": "#333333"
     },

@@ -2,11 +2,12 @@
 Система меню приложения
 """
 import os
-from typing import Dict, Callable, Optional
+from typing import Dict, Callable
 from PyQt6.QtWidgets import QMenuBar, QMenu
 from PyQt6.QtGui import QIcon, QAction
 from ..core.config_loader import load_menu_config, load_localization
 from ..core.theme_manager import _THEME
+from ..core.project_manager import _PROJECT_MANAGER
 
 
 class MenuSystem:
@@ -55,6 +56,8 @@ class MenuSystem:
                 self._create_button_item(menu, item_config, menu_name)
             elif item_type == "checkbox":
                 self._create_checkbox_item(menu, item_config, menu_name)
+            elif item_type == "menu":
+                self._create_submenu_item(menu, item_config, menu_name)
     
     def _create_button_item(self, menu: QMenu, item_config: dict, menu_name: str):
         """Создает кнопочный элемент меню"""
@@ -69,7 +72,7 @@ class MenuSystem:
             if os.path.exists(icon_path):
                 # Load and scale icon to 16x16 pixels
                 icon = QIcon(icon_path)
-                pixmap = icon.pixmap(16, 16)
+                pixmap = icon.pixmap(18, 18)
                 action.setIcon(QIcon(pixmap))
         
         action.triggered.connect(lambda checked, m=menu_name, i=item_id: self._on_menu_action(m, i, "button"))
@@ -90,6 +93,34 @@ class MenuSystem:
         menu.addAction(action)
         self.checkboxes[item_id] = action
     
+    def _create_submenu_item(self, menu: QMenu, item_config: dict, menu_name: str):
+        """Создает подменю"""
+        item_id = item_config["id"]
+        submenu_items = item_config.get("items", [])
+        
+        # Создаем подменю
+        submenu = menu.addMenu(self._tr(item_id))
+        submenu.setObjectName(item_id)
+        
+        # Добавляем иконку если есть
+        icon_file = item_config.get("icon", "")
+        if icon_file:
+            icon_path = self._get_icon_path(icon_file)
+            if os.path.exists(icon_path):
+                icon = QIcon(icon_path)
+                pixmap = icon.pixmap(18, 18)
+                submenu.setIcon(QIcon(pixmap))
+        
+        # Сохраняем ссылку на подменю
+        self.menus[item_id] = submenu
+        
+        # Рекурсивно создаем элементы подменю
+        self._create_menu_items(submenu, submenu_items, item_id)
+        
+        # Если это меню "OpenRecent", добавляем последние проекты
+        if item_id == "top_bar_submenu_OpenRecent":
+            self._populate_recent_projects_menu(submenu)
+    
     def _get_icon_path(self, icon_filename: str) -> str:
         """Получает путь к иконке в зависимости от текущей темы"""
         theme_folder = os.path.join(_THEME.icons_base_path, "light_theme" if _THEME.is_light_theme() else "dark_theme")
@@ -101,15 +132,37 @@ class MenuSystem:
     def _on_menu_action(self, menu_name: str, item_id: str, item_type: str, value=None):
         """Обрабатывает действия меню"""
         if item_type == "button":
-            # Route window actions
-            if hasattr(self.parent, 'window_router'):
-                if not self.parent.window_router.dispatch(self.parent, item_id):
-                    if item_id == "top_bar_submenu_Exit":
-                        self.parent.close()
+            # Обрабатываем специальные действия
+            if item_id == "top_bar_submenu_SaveAs":
+                self._handle_save_as()
+            elif item_id == "top_bar_submenu_Open":
+                self._handle_open_project()
+            elif item_id == "top_bar_submenu_Exit":
+                self.parent.close()
+            else:
+                # Route window actions
+                if hasattr(self.parent, 'window_router'):
+                    self.parent.window_router.dispatch(self.parent, item_id)
         elif item_type == "checkbox":
             if item_id == "top_bar_submenu_Light_Theme":
                 _THEME.set_theme(value)
                 self._update_theme()
+    
+    def _handle_save_as(self):
+        """Обрабатывает действие SaveAs"""
+        file_path = _PROJECT_MANAGER.get_save_file_path(self.parent)
+        if file_path:
+            _PROJECT_MANAGER.save_project(file_path, parent_widget=self.parent)
+            # Обновляем меню последних проектов
+            self.refresh_recent_projects_menu()
+    
+    def _handle_open_project(self):
+        """Обрабатывает действие Open"""
+        file_path = _PROJECT_MANAGER.get_open_file_path(self.parent)
+        if file_path:
+            _PROJECT_MANAGER.open_project(file_path, self.parent)
+            # Обновляем меню последних проектов
+            self.refresh_recent_projects_menu()
     
     def _update_theme(self):
         """Обновляет тему приложения"""
@@ -181,19 +234,92 @@ class MenuSystem:
         """Обновляет иконки меню"""
         # Update icons for all actions
         for item_id, action in self.actions.items():
-            # Find the item config to get icon filename
-            for menu_config in self.menu_config["menus"]:
-                for item_config in menu_config["items"]:
-                    if item_config.get("id") == item_id and item_config.get("type") == "button":
-                        icon_file = item_config.get("icon", "")
-                        if icon_file:
-                            icon_path = self._get_icon_path(icon_file)
-                            if os.path.exists(icon_path):
-                                # Load and scale icon to 16x16 pixels
-                                icon = QIcon(icon_path)
-                                pixmap = icon.pixmap(16, 16)
-                                action.setIcon(QIcon(pixmap))
-                        break
+            icon_file = self._find_icon_in_config(item_id, "button")
+            if icon_file:
+                icon_path = self._get_icon_path(icon_file)
+                if os.path.exists(icon_path):
+                    icon = QIcon(icon_path)
+                    pixmap = icon.pixmap(18, 18)
+                    action.setIcon(QIcon(pixmap))
+        
+        # Update icons for submenus
+        for item_id, submenu in self.menus.items():
+            if hasattr(submenu, 'menuBar'):  # Skip main menu bar
+                continue
+            icon_file = self._find_icon_in_config(item_id, "menu")
+            if icon_file:
+                icon_path = self._get_icon_path(icon_file)
+                if os.path.exists(icon_path):
+                    icon = QIcon(icon_path)
+                    pixmap = icon.pixmap(18, 18)
+                    submenu.setIcon(QIcon(pixmap))
+    
+    def _find_icon_in_config(self, item_id: str, item_type: str) -> str:
+        """Находит иконку для элемента в конфигурации"""
+        for menu_config in self.menu_config["menus"]:
+            for item_config in menu_config["items"]:
+                if item_config.get("id") == item_id and item_config.get("type") == item_type:
+                    return item_config.get("icon", "")
+        return ""
+    
+    def _populate_recent_projects_menu(self, menu: QMenu):
+        """Заполняет меню последними проектами"""
+        recent_projects = _PROJECT_MANAGER.get_recent_projects()
+        
+        if recent_projects:
+            # Добавляем разделитель если есть статические элементы
+            if menu.actions():
+                menu.addSeparator()
+            
+            # Добавляем последние проекты
+            for project_info in recent_projects:
+                project_name = _PROJECT_MANAGER.get_recent_project_name(project_info)
+                project_path = project_info.get("path", "")
+                
+                action = QAction(f"📄 {project_name}", self.parent)
+                action.setObjectName(f"recent_project_{project_path}")
+                
+                # Добавляем иконку проекта
+                icon_path = self._get_icon_path("OpenRecent.png")
+                if os.path.exists(icon_path):
+                    icon = QIcon(icon_path)
+                    pixmap = icon.pixmap(18, 18)
+                    action.setIcon(QIcon(pixmap))
+                
+                # Подключаем действие
+                action.triggered.connect(
+                    lambda checked, path=project_path: self._on_open_recent_project(path)
+                )
+                
+                menu.addAction(action)
+        else:
+            # Если нет последних проектов, добавляем заглушку
+            if menu.actions():
+                menu.addSeparator()
+            
+            no_projects_action = QAction("Нет недавних проектов", self.parent)
+            no_projects_action.setEnabled(False)
+            menu.addAction(no_projects_action)
+    
+    def _on_open_recent_project(self, project_path: str):
+        """Обрабатывает открытие последнего проекта"""
+        _PROJECT_MANAGER.open_project(project_path, self.parent)
+    
+    def refresh_recent_projects_menu(self):
+        """Обновляет меню последних проектов"""
+        if "top_bar_submenu_OpenRecent" in self.menus:
+            menu = self.menus["top_bar_submenu_OpenRecent"]
+            # Очищаем меню от последних проектов (оставляем статические элементы)
+            actions_to_remove = []
+            for action in menu.actions():
+                if action.objectName().startswith("recent_project_"):
+                    actions_to_remove.append(action)
+            
+            for action in actions_to_remove:
+                menu.removeAction(action)
+            
+            # Заполняем заново
+            self._populate_recent_projects_menu(menu)
     
     def _tr(self, key: str) -> str:
         """Переводит ключ на текущий язык"""

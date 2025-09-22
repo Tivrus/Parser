@@ -19,8 +19,8 @@
     "module": "about",
     "function": "open_about_window",
     "args": {
-      "width": 480,
-      "height": 560
+      "width": 280,
+      "height": 180
     }
   }
 }
