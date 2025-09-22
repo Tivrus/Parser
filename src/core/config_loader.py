@@ -57,9 +57,6 @@ class ConfigLoader:
         """Загружает цветовые схемы"""
         return self.load_json("color_schemes.json")
     
-    def load_window_routes(self) -> Dict[str, Dict[str, Any]]:
-        """Загружает маршруты окон"""
-        return self.load_json("window_routes.json")
 
 
 # Глобальный экземпляр загрузчика конфигураций
@@ -78,6 +75,3 @@ def load_color_schemes() -> Dict[str, Dict[str, Any]]:
     """Загружает цветовые схемы"""
     return _config_loader.load_color_schemes()
 
-def load_window_routes() -> Dict[str, Dict[str, Any]]:
-    """Загружает маршруты окон"""
-    return _config_loader.load_window_routes()

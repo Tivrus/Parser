@@ -1,18 +1,26 @@
 """
-Менеджер заголовка окна приложения
+Менеджер заголовка окна приложения.
+
 Система как в Blender: [*] ProjectName - Path - ApplicationName
+Обеспечивает динамическое обновление заголовка окна в зависимости от состояния проекта.
 """
-import os
 from pathlib import Path
 from typing import Optional
 
 
 class TitleManager:
-    """Класс для управления заголовком главного окна приложения"""
+    """
+    Класс для управления заголовком главного окна приложения.
+    
+    Основные функции:
+    - Отслеживание состояния проекта (новый, сохранен, изменен)
+    - Динамическое обновление заголовка окна
+    - Форматирование заголовка в стиле Blender
+    """
     
     def __init__(self, app_name: str = "Parser"):
         """
-        Инициализация менеджера заголовка
+        Инициализация менеджера заголовка.
         
         Args:
             app_name: Название приложения
@@ -23,9 +31,11 @@ class TitleManager:
         self.is_modified = False
         self._main_window = None
     
+    # === УПРАВЛЕНИЕ ГЛАВНЫМ ОКНОМ ===
+    
     def set_main_window(self, main_window):
         """
-        Устанавливает ссылку на главное окно
+        Устанавливает ссылку на главное окно.
         
         Args:
             main_window: Главное окно приложения
@@ -33,8 +43,10 @@ class TitleManager:
         self._main_window = main_window
         self._update_title()
     
+    # === УПРАВЛЕНИЕ ПРОЕКТАМИ ===
+    
     def new_project(self):
-        """Создает новый проект"""
+        """Создает новый проект."""
         self.project_name = "untitled"
         self.project_path = None
         self.is_modified = True
@@ -42,7 +54,7 @@ class TitleManager:
     
     def open_project(self, file_path: str):
         """
-        Открывает проект
+        Открывает проект.
         
         Args:
             file_path: Путь к файлу проекта
@@ -54,7 +66,7 @@ class TitleManager:
     
     def save_project(self, file_path: str = None):
         """
-        Сохраняет проект
+        Сохраняет проект.
         
         Args:
             file_path: Путь для сохранения (если None, используется текущий путь)
@@ -68,7 +80,7 @@ class TitleManager:
     
     def set_modified(self, modified: bool = True):
         """
-        Устанавливает флаг изменений
+        Устанавливает флаг изменений.
         
         Args:
             modified: True если есть несохраненные изменения
@@ -76,9 +88,11 @@ class TitleManager:
         self.is_modified = modified
         self._update_title()
     
+    # === ГЕТТЕРЫ ===
+    
     def get_project_path(self) -> Optional[str]:
         """
-        Возвращает путь к текущему проекту
+        Возвращает путь к текущему проекту.
         
         Returns:
             Путь к проекту или None
@@ -87,7 +101,7 @@ class TitleManager:
     
     def get_project_name(self) -> str:
         """
-        Возвращает название текущего проекта
+        Возвращает название текущего проекта.
         
         Returns:
             Название проекта
@@ -96,7 +110,7 @@ class TitleManager:
     
     def is_project_saved(self) -> bool:
         """
-        Проверяет, сохранен ли проект
+        Проверяет, сохранен ли проект.
         
         Returns:
             True если проект сохранен
@@ -105,19 +119,39 @@ class TitleManager:
     
     def has_unsaved_changes(self) -> bool:
         """
-        Проверяет, есть ли несохраненные изменения
+        Проверяет, есть ли несохраненные изменения.
         
         Returns:
             True если есть несохраненные изменения
         """
         return self.is_modified
     
+    def get_full_title(self) -> str:
+        """
+        Возвращает полный заголовок окна.
+        
+        Returns:
+            Полный заголовок
+        """
+        return self._format_title()
+    
+    # === ВНУТРЕННИЕ МЕТОДЫ ===
+    
     def _update_title(self):
-        """Обновляет заголовок главного окна"""
+        """Обновляет заголовок главного окна."""
         if not self._main_window:
             return
         
-        # Формируем заголовок в стиле Blender
+        title = self._format_title()
+        self._main_window.setWindowTitle(title)
+    
+    def _format_title(self) -> str:
+        """
+        Формирует заголовок окна в стиле Blender.
+        
+        Returns:
+            Отформатированный заголовок
+        """
         title_parts = []
         
         # 1. Звездочка для несохраненных изменений
@@ -134,32 +168,6 @@ class TitleManager:
             title_parts.append(f"- {project_dir}")
         
         # 4. Название приложения
-        title_parts.append(f"- {self.app_name}")
-        
-        # Собираем заголовок
-        title = " ".join(title_parts)
-        
-        # Обновляем заголовок окна
-        self._main_window.setWindowTitle(title)
-    
-    def get_full_title(self) -> str:
-        """
-        Возвращает полный заголовок окна
-        
-        Returns:
-            Полный заголовок
-        """
-        title_parts = []
-        
-        if self.is_modified:
-            title_parts.append("*")
-        
-        title_parts.append(self.project_name)
-        
-        if self.project_path:
-            project_dir = Path(self.project_path).parent
-            title_parts.append(f"- {project_dir}")
-        
         title_parts.append(f"- {self.app_name}")
         
         return " ".join(title_parts)

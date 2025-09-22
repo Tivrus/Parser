@@ -1,7 +1,7 @@
 """
 Базовое окно приложения
 """
-from PyQt6.QtWidgets import QMainWindow, QWidget
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
 
 
@@ -26,3 +26,23 @@ class BaseWindow(QMainWindow):
         # Создаем центральный виджет
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
+        
+        # Создаем основной макет
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # Создаем контент (переопределяется в наследниках)
+        content = self.create_content()
+        if content:
+            main_layout.addWidget(content)
+    
+    def create_content(self):
+        """
+        Создает содержимое окна.
+        Переопределяется в наследниках.
+        
+        Returns:
+            QWidget с содержимым окна или None
+        """
+        return None

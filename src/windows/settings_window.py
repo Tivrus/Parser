@@ -1,7 +1,7 @@
 """
 Окно настроек
 """
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QCheckBox
+from PyQt6.QtWidgets import QVBoxLayout
 from .base_window import BaseWindow
 
 
