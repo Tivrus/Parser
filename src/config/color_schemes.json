@@ -1,0 +1,96 @@
+{
+  "dark": {
+    "main_window": {
+      "background": "#1E1E1E",
+      "text": "#FFFFFF",
+      "secondary_text": "#CCCCCC"
+    },
+    "top_menu_bar": {
+      "background": "#2B2B2B",
+      "text": "#FFFFFF",
+      "hover": "#404040",
+      "click": "#505050"
+    },
+    "menu_item": {
+      "background": "transparent",
+      "text": "#FFFFFF",
+      "hover": "#404040",
+      "click": "#505050"
+    },
+    "submenu_container": {
+      "background": "#1F2124",
+      "border": "#333333",
+      "shadow": "#000000"
+    },
+    "submenu_button": {
+      "background": "transparent",
+      "text": "#FFFFFF",
+      "hover": "#2D3135",
+      "click": "#3A3D41",
+      "icon_tint": "#FFFFFF"
+    },
+    "submenu_checkbox": {
+      "background": "transparent",
+      "text": "#FFFFFF",
+      "hover": "#2D3135",
+      "click": "#3A3D41",
+      "check_color": "#007ACC",
+      "check_hover": "#1E88E5"
+    },
+    "submenu_separator": {
+      "color": "#555555"
+    },
+    "dialog": {
+      "background": "#2D2D30",
+      "text": "#FFFFFF",
+      "border": "#464647"
+    }
+  },
+  "light": {
+    "main_window": {
+      "background": "#FFFFFF",
+      "text": "#333333",
+      "secondary_text": "#666666"
+    },
+    "top_menu_bar": {
+      "background": "#F3F3F3",
+      "text": "#333333",
+      "hover": "#E1E1E1",
+      "click": "#D1D1D1"
+    },
+    "menu_item": {
+      "background": "transparent",
+      "text": "#333333",
+      "hover": "#E5F3FF",
+      "click": "#CCE8FF"
+    },
+    "submenu_container": {
+      "background": "#FFFFFF",
+      "border": "#CCCCCC",
+      "shadow": "#00000020"
+    },
+    "submenu_button": {
+      "background": "transparent",
+      "text": "#333333",
+      "hover": "#E5F3FF",
+      "click": "#CCE8FF",
+      "icon_tint": "#333333"
+    },
+    "submenu_checkbox": {
+      "background": "transparent",
+      "text": "#333333",
+      "hover": "#E5F3FF",
+      "click": "#CCE8FF",
+      "check_color": "#0078D4",
+      "check_hover": "#106EBE"
+    },
+    "submenu_separator": {
+      "color": "#E1E1E1"
+    },
+    "dialog": {
+      "background": "#FFFFFF",
+      "text": "#333333",
+      "border": "#E1E1E1"
+    }
+  }
+}

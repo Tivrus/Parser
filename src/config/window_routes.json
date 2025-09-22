@@ -1,0 +1,26 @@
+{
+  "top_bar_submenu_Preferences": {
+    "module": "settings",
+    "function": "open_settings_window",
+    "args": {
+      "width": 600,
+      "height": 500
+    }
+  },
+  "top_bar_submenu_Documentation": {
+    "module": "documentation",
+    "function": "open_documentation_window",
+    "args": {
+      "width": 700,
+      "height": 600
+    }
+  },
+  "top_bar_submenu_About_App": {
+    "module": "about",
+    "function": "open_about_window",
+    "args": {
+      "width": 480,
+      "height": 560
+    }
+  }
+}

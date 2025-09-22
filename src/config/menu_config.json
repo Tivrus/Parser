@@ -1,0 +1,89 @@
+{
+  "menus": [
+    {
+      "name": "File",
+      "id": "top_bar_menu_File",
+      "position_ru": 0,
+      "position_en": 0,
+      "items": [
+        {"type": "button", "id": "top_bar_submenu_New", "icon": "New.png"},
+        {"type": "button", "id": "top_bar_submenu_Open", "icon": "Open.png"},
+        {"type": "button", "id": "top_bar_submenu_OpenRecent", "icon": "OpenRecent.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Save", "icon": "Save.png"},
+        {"type": "button", "id": "top_bar_submenu_SaveAs", "icon": "SaveAs.png"},
+        {"type": "checkbox", "id": "top_bar_submenu_AutoSave", "default": true},
+        {"type": "button", "id": "top_bar_submenu_SaveCopy", "icon": "SaveCopy.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Import", "icon": "Import.png"},
+        {"type": "button", "id": "top_bar_submenu_Export", "icon": "Export.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Exit", "icon": "Exit.png"}
+      ]
+    },
+    {
+      "name": "Edit",
+      "id": "top_bar_menu_Edit",
+      "position_ru": 50,
+      "position_en": 40,
+      "items": [
+        {"type": "button", "id": "top_bar_submenu_Undo", "icon": "Undo.png"},
+        {"type": "button", "id": "top_bar_submenu_Redo", "icon": "Redo.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Cut", "icon": "Cut.png"},
+        {"type": "button", "id": "top_bar_submenu_Copy", "icon": "Copy.png"},
+        {"type": "button", "id": "top_bar_submenu_Paste", "icon": "Paste.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Select_All_Blocks", "icon": "SelectAllBlocks.png"},
+        {"type": "button", "id": "top_bar_submenu_Delete_Block", "icon": "DeleteBlock.png"},
+        {"type": "button", "id": "top_bar_submenu_Clear_Workspace", "icon": "ClearWorkspace.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Preferences", "icon": "Preferences.png"}
+      ]
+    },
+    {
+      "name": "View",
+      "id": "top_bar_menu_View",
+      "position_ru": 108,
+      "position_en": 82,
+      "items": [
+        {"type": "button", "id": "top_bar_submenu_Zoom_In", "icon": "ZoomIn.png"},
+        {"type": "button", "id": "top_bar_submenu_Zoom_Out", "icon": "ZoomOut.png"},
+        {"type": "button", "id": "top_bar_submenu_Reset_Zoom", "icon": "ResetZoom.png"},
+        {"type": "separator"},
+        {"type": "checkbox", "id": "top_bar_submenu_Toggle_Grid", "default": true},
+        {"type": "checkbox", "id": "top_bar_submenu_Toggle_Snap_to_Grid", "default": true},
+        {"type": "separator"},
+        {"type": "checkbox", "id": "top_bar_submenu_Light_Theme", "default": false}
+      ]
+    },
+    {
+      "name": "Tools",
+      "id": "top_bar_menu_Tools",
+      "position_ru": 149,
+      "position_en": 129,
+      "items": [
+        {"type": "button", "id": "top_bar_submenu_Inspector_Mode", "icon": "InspectorMode.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Run_Script", "icon": "RunScript.png"},
+        {"type": "button", "id": "top_bar_submenu_Stop_Execution", "icon": "StopExecution.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Auto_Align_Blocks", "icon": "AutoAlignBlocks.png"},
+        {"type": "button", "id": "top_bar_submenu_Open_Dev_Tools", "icon": "OpenDevTools.png"},
+        {"type": "button", "id": "top_bar_submenu_Reload_Site", "icon": "ReloadSite.png"}
+      ]
+    },
+    {
+      "name": "Help",
+      "id": "top_bar_menu_Help",
+      "position_ru": 239,
+      "position_en": 178,
+      "items": [
+        {"type": "button", "id": "top_bar_submenu_Documentation", "icon": "Documentation.png"},
+        {"type": "button", "id": "top_bar_submenu_About_App", "icon": "AboutApp.png"},
+        {"type": "separator"},
+        {"type": "button", "id": "top_bar_submenu_Check_Updates", "icon": "CheckUpdates.png"}
+      ]
+    }
+  ]
+}
