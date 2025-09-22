@@ -1,155 +1,203 @@
 """
-Менеджер текстов и локализации
+Менеджер текстов приложения.
 
-Обеспечивает получение текстов по ID с поддержкой многоязычности.
-Если текст не найден в файле локализации, возвращает сам ID.
+Обеспечивает централизованное управление текстами через ID,
+автоматический перевод через файл локализации.
 """
-from typing import Dict, Optional
+from typing import Dict, Any
 from .config_loader import load_localization
 
 
 class TextManager:
     """
-    Менеджер для управления текстами и локализацией.
+    Класс для управления текстами приложения через ID.
     
     Основные функции:
-    - Получение текстов по ID
-    - Поддержка многоязычности
-    - Автоматическое использование ID как fallback
+    - Получение текстов по ID из файла локализации
+    - Автоматический перевод на текущий язык
+    - Fallback на ID если перевод не найден
     """
     
-    def __init__(self, default_language: str = "ru"):
+    def __init__(self, language: str = "ru"):
         """
         Инициализация менеджера текстов.
         
         Args:
-            default_language: Язык по умолчанию
+            language: Язык интерфейса по умолчанию
         """
-        self.current_language = default_language
-        self.localization_data = load_localization()
+        self.current_language = language
+        self.localization = load_localization()
     
-    def set_language(self, language: str) -> None:
+    def set_language(self, language: str):
         """
         Устанавливает текущий язык.
         
         Args:
-            language: Код языка (ru, en, etc.)
+            language: Код языка (ru, en)
         """
         self.current_language = language
     
-    def get_text(self, text_id: str, language: Optional[str] = None) -> str:
+    def get_current_language(self) -> str:
         """
-        Получает текст по ID для текущего языка.
+        Возвращает текущий язык.
+        
+        Returns:
+            Код текущего языка
+        """
+        return self.current_language
+    
+    def get_text(self, text_id: str) -> str:
+        """
+        Получает текст по ID из файла локализации.
         
         Args:
-            text_id: Идентификатор текста
-            language: Язык (если None, используется текущий)
+            text_id: ID текста
             
         Returns:
-            Текст на указанном языке или сам ID если не найден
+            Переведенный текст или сам ID если перевод не найден
         """
-        if language is None:
-            language = self.current_language
-        
-        # Получаем данные для указанного языка
-        language_data = self.localization_data.get(language, {})
+        # Получаем переводы для текущего языка
+        language_data = self.localization.get(self.current_language, {})
         
         # Ищем текст по ID
-        text = language_data.get(text_id)
+        translated_text = language_data.get(text_id)
         
-        # Если текст найден, возвращаем его
-        if text is not None:
-            return text
+        if translated_text:
+            return translated_text
         
-        # Если не найден, возвращаем сам ID
+        # Если перевод не найден, пробуем русский как fallback
+        if self.current_language != "ru":
+            ru_data = self.localization.get("ru", {})
+            translated_text = ru_data.get(text_id)
+            if translated_text:
+                return translated_text
+        
+        # Если нигде не найден, возвращаем сам ID
         return text_id
     
-    def get_all_texts(self, language: Optional[str] = None) -> Dict[str, str]:
+    def get_text_with_params(self, text_id: str, **params) -> str:
         """
-        Получает все тексты для указанного языка.
+        Получает текст по ID и подставляет параметры.
         
         Args:
-            language: Язык (если None, используется текущий)
+            text_id: ID текста
+            **params: Параметры для подстановки в текст
             
         Returns:
-            Словарь с текстами
+            Переведенный текст с подставленными параметрами
+        """
+        text = self.get_text(text_id)
+        
+        # Подставляем параметры в текст
+        try:
+            return text.format(**params)
+        except (KeyError, ValueError):
+            # Если не удалось подставить параметры, возвращаем исходный текст
+            return text
+    
+    def has_text(self, text_id: str) -> bool:
+        """
+        Проверяет, есть ли текст с данным ID.
+        
+        Args:
+            text_id: ID текста
+            
+        Returns:
+            True если текст найден
+        """
+        # Проверяем в текущем языке
+        language_data = self.localization.get(self.current_language, {})
+        if text_id in language_data:
+            return True
+        
+        # Проверяем в русском как fallback
+        if self.current_language != "ru":
+            ru_data = self.localization.get("ru", {})
+            if text_id in ru_data:
+                return True
+        
+        return False
+    
+    def get_all_texts_for_language(self, language: str = None) -> Dict[str, str]:
+        """
+        Возвращает все тексты для указанного языка.
+        
+        Args:
+            language: Код языка. Если None, используется текущий язык
+            
+        Returns:
+            Словарь {ID: текст} для указанного языка
         """
         if language is None:
             language = self.current_language
         
-        return self.localization_data.get(language, {})
+        return self.localization.get(language, {})
     
-    def get_available_languages(self) -> list:
-        """
-        Получает список доступных языков.
-        
-        Returns:
-            Список кодов языков
-        """
-        return list(self.localization_data.keys())
-    
-    def has_text(self, text_id: str, language: Optional[str] = None) -> bool:
-        """
-        Проверяет, существует ли текст с указанным ID.
-        
-        Args:
-            text_id: Идентификатор текста
-            language: Язык (если None, используется текущий)
-            
-        Returns:
-            True если текст существует
-        """
-        if language is None:
-            language = self.current_language
-        
-        language_data = self.localization_data.get(language, {})
-        return text_id in language_data
+    def reload_localization(self):
+        """Перезагружает файл локализации."""
+        self.localization = load_localization()
 
 
 # Глобальный экземпляр менеджера текстов
 _TEXT_MANAGER = TextManager()
 
 
-# Функции для удобного доступа
-def get_text(text_id: str, language: Optional[str] = None) -> str:
+# Функции для быстрого доступа
+def get_text(text_id: str) -> str:
     """
     Получает текст по ID.
     
     Args:
-        text_id: Идентификатор текста
-        language: Язык (если None, используется текущий)
+        text_id: ID текста
         
     Returns:
-        Текст на указанном языке или сам ID если не найден
+        Переведенный текст или ID
     """
-    return _TEXT_MANAGER.get_text(text_id, language)
+    return _TEXT_MANAGER.get_text(text_id)
 
 
-def set_language(language: str) -> None:
+def get_text_with_params(text_id: str, **params) -> str:
+    """
+    Получает текст по ID с параметрами.
+    
+    Args:
+        text_id: ID текста
+        **params: Параметры для подстановки
+        
+    Returns:
+        Переведенный текст с параметрами
+    """
+    return _TEXT_MANAGER.get_text_with_params(text_id, **params)
+
+
+def set_language(language: str):
     """
     Устанавливает текущий язык.
     
     Args:
-        language: Код языка (ru, en, etc.)
+        language: Код языка
     """
     _TEXT_MANAGER.set_language(language)
 
 
 def get_current_language() -> str:
     """
-    Получает текущий язык.
+    Возвращает текущий язык.
     
     Returns:
         Код текущего языка
     """
-    return _TEXT_MANAGER.current_language
+    return _TEXT_MANAGER.get_current_language()
 
 
-def get_available_languages() -> list:
+def has_text(text_id: str) -> bool:
     """
-    Получает список доступных языков.
+    Проверяет наличие текста по ID.
     
+    Args:
+        text_id: ID текста
+        
     Returns:
-        Список кодов языков
+        True если текст найден
     """
-    return _TEXT_MANAGER.get_available_languages()
+    return _TEXT_MANAGER.has_text(text_id)

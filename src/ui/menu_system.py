@@ -276,15 +276,8 @@ class MenuSystem:
         project_name = _PROJECT_MANAGER.get_recent_project_name(project_info)
         project_path = project_info.get("path", "")
         
-        action = QAction(f"📄 {project_name}", self.parent)
+        action = QAction(project_name, self.parent)
         action.setObjectName(f"recent_project_{project_path}")
-        
-        # Добавляем иконку проекта
-        icon_path = self._get_icon_path("OpenRecent.png")
-        if os.path.exists(icon_path):
-            icon = QIcon(icon_path)
-            pixmap = icon.pixmap(18, 18)
-            action.setIcon(QIcon(pixmap))
         
         # Подключаем действие
         action.triggered.connect(
@@ -303,7 +296,8 @@ class MenuSystem:
         if menu.actions():
             menu.addSeparator()
         
-        no_projects_action = QAction("Нет недавних проектов", self.parent)
+        from ..core.text_manager import get_text
+        no_projects_action = QAction(get_text("message_no_recent_projects"), self.parent)
         no_projects_action.setEnabled(False)
         menu.addAction(no_projects_action)
     
@@ -332,7 +326,9 @@ class MenuSystem:
         """
         actions_to_remove = []
         for action in menu.actions():
-            if action.objectName().startswith("recent_project_"):
+            # Удаляем как проекты, так и заглушку "Нет недавних проектов"
+            if (action.objectName().startswith("recent_project_") or 
+                not action.isEnabled()):  # Заглушка всегда disabled
                 actions_to_remove.append(action)
         
         for action in actions_to_remove:

@@ -1,7 +1,7 @@
 """
 Роутер для управления окнами приложения
 """
-from ..windows import SettingsWindow, AboutWindow, NewWindow, DocumentationWindow
+from ..windows import SettingsWindow, AboutWindow, NewWindow
 
 
 class WindowRouter:
@@ -32,12 +32,7 @@ class WindowRouter:
                 window = NewWindow(parent, width=400, height=300)
                 window.show()
                 return True
-                
-            elif action_id == "top_bar_submenu_Documentation":
-                window = DocumentationWindow(parent, width=700, height=600)
-                window.show()
-                return True
-                
+                                
             elif action_id == "top_bar_submenu_About_App":
                 window = AboutWindow(parent, width=480, height=560)
                 window.show()

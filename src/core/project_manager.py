@@ -23,7 +23,9 @@ class ProjectManager:
     def __init__(self):
         """Инициализация менеджера проектов."""
         self.projects_dir = Path.home() / "Downloads"
-        self.recent_projects_file = self.projects_dir / "recent_projects.json"
+        # Используем файл recent_projects.json из папки config
+        config_dir = Path(__file__).parent.parent / "config"
+        self.recent_projects_file = config_dir / "recent_projects.json"
         self.max_recent_files = 5
         
         # Создаем директорию проектов если её нет
@@ -259,6 +261,9 @@ class ProjectManager:
             recent_projects: Список словарей с информацией о проектах
         """
         try:
+            # Создаем директорию если её нет
+            self.recent_projects_file.parent.mkdir(parents=True, exist_ok=True)
+            
             with open(self.recent_projects_file, 'w', encoding='utf-8') as f:
                 json.dump(recent_projects, f, ensure_ascii=False, indent=2)
         except IOError as e:

@@ -4,6 +4,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 from PyQt6.QtCore import Qt
 from .base_window import BaseWindow
+from ..core.text_manager import get_text
 
 
 class SaveDiscardWindow(BaseWindow):
@@ -11,7 +12,7 @@ class SaveDiscardWindow(BaseWindow):
     
     def __init__(self, parent=None, width=350, height=200):
         """Инициализация окна диалога сохранения"""
-        super().__init__(parent, "Сохранить проект?", width, height)
+        super().__init__(parent, get_text("window_save_discard_title"), width, height)
         self.user_choice = None  # None, 'save', 'discard', 'cancel'
     
     def create_content(self):
@@ -22,12 +23,12 @@ class SaveDiscardWindow(BaseWindow):
         layout.setSpacing(16)
         
         # Сообщение
-        message_label = QLabel("У вас есть несохраненные изменения.")
+        message_label = QLabel(get_text("window_save_discard_message"))
         message_label.setWordWrap(True)
         message_label.setStyleSheet("font-size: 14px; margin-bottom: 8px;")
         layout.addWidget(message_label)
         
-        question_label = QLabel("Хотите сохранить текущий проект?")
+        question_label = QLabel(get_text("window_save_discard_question"))
         question_label.setWordWrap(True)
         question_label.setStyleSheet("font-size: 14px; font-weight: bold;")
         layout.addWidget(question_label)
@@ -37,7 +38,7 @@ class SaveDiscardWindow(BaseWindow):
         button_layout.setSpacing(12)
         
         # Кнопка "Сохранить"
-        save_button = QPushButton("Сохранить")
+        save_button = QPushButton(get_text("button_save"))
         save_button.clicked.connect(self._save_project)
         save_button.setDefault(True)
         save_button.setStyleSheet("""
@@ -55,7 +56,7 @@ class SaveDiscardWindow(BaseWindow):
         """)
         
         # Кнопка "Не сохранять"
-        discard_button = QPushButton("Не сохранять")
+        discard_button = QPushButton(get_text("button_discard"))
         discard_button.clicked.connect(self._discard_project)
         discard_button.setStyleSheet("""
             QPushButton {
@@ -72,7 +73,7 @@ class SaveDiscardWindow(BaseWindow):
         """)
         
         # Кнопка "Отмена"
-        cancel_button = QPushButton("Отмена")
+        cancel_button = QPushButton(get_text("button_cancel"))
         cancel_button.clicked.connect(self._cancel_action)
         cancel_button.setStyleSheet("""
             QPushButton {
@@ -102,7 +103,7 @@ class SaveDiscardWindow(BaseWindow):
         self.user_choice = 'save'
         
         # Показываем диалог сохранения
-        from ...core.project_manager import _PROJECT_MANAGER
+        from ..core.project_manager import _PROJECT_MANAGER
         file_path = _PROJECT_MANAGER.get_save_file_path(self)
         
         if file_path:
