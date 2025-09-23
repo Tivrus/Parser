@@ -353,16 +353,128 @@ class WebBrowser(QWidget):
             
             let highlightedElement = null;
             
+            // Функция для получения абсолютного XPath элемента
+            function getXPath(element) {
+                if (!element || element.nodeType !== 1) {
+                    return '/html';
+                }
+                
+                // Если есть ID, используем его
+                if (element.id !== '') {
+                    return '//*[@id="' + element.id + '"]';
+                }
+                
+                // Специальные случаи
+                if (element === document.body) {
+                    return '/html/body';
+                }
+                
+                if (element === document.documentElement) {
+                    return '/html';
+                }
+                
+                // Строим абсолютный путь от корня
+                const path = [];
+                let current = element;
+                
+                while (current && current.nodeType === 1 && current !== document.documentElement) {
+                    let index = 0;
+                    let sibling = current;
+                    
+                    // Считаем индекс элемента среди соседей с тем же тегом
+                    while (sibling) {
+                        if (sibling.tagName === current.tagName) {
+                            index++;
+                        }
+                        sibling = sibling.previousElementSibling;
+                    }
+                    
+                    // Добавляем тег с индексом
+                    const tagName = current.tagName.toLowerCase();
+                    path.unshift(tagName + '[' + index + ']');
+                    
+                    current = current.parentElement;
+                }
+                
+                // Собираем полный путь
+                if (path.length > 0) {
+                    return '/html/' + path.join('/');
+                }
+                
+                return '/html';
+            }
+            
+            // Альтернативная функция XPath для сложных случаев
+            function getAbsoluteXPath(element) {
+                if (!element || element.nodeType !== 1) {
+                    return '/html';
+                }
+                
+                if (element.id) {
+                    return '//*[@id="' + element.id + '"]';
+                }
+                
+                const parts = [];
+                let current = element;
+                
+                while (current && current.nodeType === 1) {
+                    let index = 1;
+                    let sibling = current.previousElementSibling;
+                    
+                    while (sibling) {
+                        if (sibling.nodeType === 1 && sibling.tagName === current.tagName) {
+                            index++;
+                        }
+                        sibling = sibling.previousElementSibling;
+                    }
+                    
+                    const tagName = current.tagName.toLowerCase();
+                    parts.unshift(tagName + '[' + index + ']');
+                    
+                    current = current.parentElement;
+                    
+                    if (current === document.body || current === document.documentElement) {
+                        break;
+                    }
+                }
+                
+                return '/html/' + parts.join('/');
+            }
+            
+            // Функция для получения всех CSS стилей элемента
+            function getAllCSSStyles(element) {
+                const computedStyle = window.getComputedStyle(element);
+                const styles = {};
+                
+                // Получаем все CSS свойства
+                for (let i = 0; i < computedStyle.length; i++) {
+                    const property = computedStyle[i];
+                    const value = computedStyle.getPropertyValue(property);
+                    if (value && value !== 'initial' && value !== 'inherit' && value !== 'normal') {
+                        styles[property] = value;
+                    }
+                }
+                
+                return styles;
+            }
+            
             // Функция для получения информации об элементе
             function getElementInfo(element) {
                 const rect = element.getBoundingClientRect();
                 const computedStyle = window.getComputedStyle(element);
+                
+                // Получаем XPath с fallback
+                let xpath = getXPath(element);
+                if (!xpath || xpath === '/html') {
+                    xpath = getAbsoluteXPath(element);
+                }
                 
                 return {
                     tagName: element.tagName,
                     id: element.id || 'none',
                     className: element.className || 'none',
                     text: element.textContent ? element.textContent.substring(0, 50) + '...' : 'none',
+                    xpath: xpath || '/html',
                     position: {
                         x: Math.round(rect.left),
                         y: Math.round(rect.top),
@@ -373,8 +485,24 @@ class WebBrowser(QWidget):
                         backgroundColor: computedStyle.backgroundColor,
                         color: computedStyle.color,
                         fontSize: computedStyle.fontSize,
-                        fontFamily: computedStyle.fontFamily
-                    }
+                        fontFamily: computedStyle.fontFamily,
+                        border: computedStyle.border,
+                        margin: computedStyle.margin,
+                        padding: computedStyle.padding,
+                        display: computedStyle.display,
+                        position: computedStyle.position,
+                        zIndex: computedStyle.zIndex,
+                        opacity: computedStyle.opacity,
+                        visibility: computedStyle.visibility,
+                        overflow: computedStyle.overflow,
+                        width: computedStyle.width,
+                        height: computedStyle.height,
+                        minWidth: computedStyle.minWidth,
+                        maxWidth: computedStyle.maxWidth,
+                        minHeight: computedStyle.minHeight,
+                        maxHeight: computedStyle.maxHeight
+                    },
+                    allStyles: getAllCSSStyles(element)
                 };
             }
             
@@ -448,22 +576,24 @@ class WebBrowser(QWidget):
         # Удаляем JavaScript для режима инспектора
         self.web_view.page().runJavaScript("""
             // Удаляем стили
-            const inspectorStyle = document.getElementById('inspector-mode-style');
-            if (inspectorStyle) {
-                inspectorStyle.remove();
-            }
-            
-            // Убираем подсветку со всех элементов
-            const highlightedElements = document.querySelectorAll('.inspector-highlight');
-            highlightedElements.forEach(el => {
-                el.classList.remove('inspector-highlight');
-            });
-            
-            // Очищаем глобальные переменные
-            window.inspectorElementClicked = null;
-            window.inspectorModeDisable = false;
-            
-            console.log('Inspector Mode отключен');
+            (function() {
+                const styleElement = document.getElementById('inspector-mode-style');
+                if (styleElement) {
+                    styleElement.remove();
+                }
+                
+                // Убираем подсветку со всех элементов
+                const highlightedElements = document.querySelectorAll('.inspector-highlight');
+                highlightedElements.forEach(function(el) {
+                    el.classList.remove('inspector-highlight');
+                });
+                
+                // Очищаем глобальные переменные
+                window.inspectorElementClicked = null;
+                window.inspectorModeDisable = false;
+                
+                console.log('Inspector Mode отключен');
+            })();
         """)
         
         print("Inspector Mode отключен")
@@ -488,17 +618,43 @@ class WebBrowser(QWidget):
     def _handle_inspector_click(self, result):
         """Обрабатывает клик в режиме инспектора"""
         if result and isinstance(result, dict):
-            print("\n" + "="*50)
+            print("\n" + "="*60)
             print("ELEMENT INSPECTOR")
-            print("="*50)
+            print("="*60)
             print(f"Tag: {result.get('tagName', 'N/A')}")
             print(f"ID: {result.get('id', 'N/A')}")
             print(f"Class: {result.get('className', 'N/A')}")
+            print(f"XPath: {result.get('xpath', 'N/A')}")
             print(f"Text: {result.get('text', 'N/A')[:100]}...")
             print(f"Position: x={result.get('position', {}).get('x', 'N/A')}, y={result.get('position', {}).get('y', 'N/A')}")
             print(f"Size: {result.get('position', {}).get('width', 'N/A')}x{result.get('position', {}).get('height', 'N/A')}")
-            print(f"HTML: {result.get('html', 'N/A')[:200]}...")
-            print("="*50 + "\n")
+            
+            # Основные CSS стили
+            styles = result.get('styles', {})
+            if styles:
+                print("\n--- CSS Styles ---")
+                for prop, value in styles.items():
+                    if value and value != 'none' and value != 'initial':
+                        print(f"{prop}: {value}")
+            
+            # HTML код
+            html = result.get('html', 'N/A')
+            if len(html) > 200:
+                print(f"\nHTML: {html[:200]}...")
+            else:
+                print(f"\nHTML: {html}")
+            
+            # Все CSS стили (если нужно)
+            all_styles = result.get('allStyles', {})
+            if all_styles and len(all_styles) > 0:
+                print(f"\n--- All CSS Properties ({len(all_styles)} total) ---")
+                for prop, value in list(all_styles.items())[:20]:  # Показываем первые 20
+                    if value and value != 'none' and value != 'initial':
+                        print(f"{prop}: {value}")
+                if len(all_styles) > 20:
+                    print(f"... and {len(all_styles) - 20} more properties")
+            
+            print("="*60 + "\n")
             
             # Очищаем результат клика
             self.web_view.page().runJavaScript("window.inspectorElementClicked = null")

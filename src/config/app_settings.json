@@ -1,7 +1,7 @@
 {
   "language": "en",
-  "theme": "dark",
-  "auto_save": false,
+  "theme": "light",
+  "auto_save": true,
   "show_grid": true,
   "snap_to_grid": true
 }
