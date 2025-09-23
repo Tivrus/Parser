@@ -200,6 +200,12 @@ class WebBrowser(QWidget):
     def open_dev_tools(self):
         """Открывает инструменты разработчика"""
         try:
+            # Отключаем Inspector Mode если он активен
+            if hasattr(self, 'inspector_mode') and self.inspector_mode:
+                self.disable_inspector_mode()
+                self.inspector_mode = False
+                self.inspector_button.setChecked(False)
+            
             # Переключаем состояние DevTools
             if hasattr(self, 'dev_tools_visible') and self.dev_tools_visible:
                 self.close_dev_tools()
@@ -317,15 +323,19 @@ class WebBrowser(QWidget):
     
     def enable_inspector_mode(self):
         """Включает режим инспектора"""
+        # Отключаем DevTools если они открыты
+        if hasattr(self, 'dev_tools_visible') and self.dev_tools_visible:
+            self.close_dev_tools()
+        
         # Включаем режим инспектора
-        self.web_view.page().setDevToolsPage(None)  # Отключаем DevTools если они открыты
+        self.web_view.page().setDevToolsPage(None)
         
         # Добавляем JavaScript для режима инспектора
         self.web_view.page().runJavaScript("""
             // Удаляем старые стили и обработчики если они есть
-            const existingStyle = document.getElementById('inspector-mode-style');
-            if (existingStyle) {
-                existingStyle.remove();
+            const oldStyle = document.getElementById('inspector-mode-style');
+            if (oldStyle) {
+                oldStyle.remove();
             }
             
             // Добавляем CSS для подсветки элементов
@@ -333,33 +343,13 @@ class WebBrowser(QWidget):
             style.id = 'inspector-mode-style';
             style.innerHTML = `
                 .inspector-highlight {
-                    outline: 2px solid #ff6b6b !important;
+                    outline: 2px solid #00a6ff !important;
                     outline-offset: 2px !important;
-                    background-color: rgba(255, 107, 107, 0.1) !important;
+                    background-color: rgba(0, 166, 255, 0.1) !important;
                     cursor: crosshair !important;
-                }
-                .inspector-info {
-                    position: fixed;
-                    top: 10px;
-                    right: 10px;
-                    background: rgba(0, 0, 0, 0.8);
-                    color: white;
-                    padding: 10px;
-                    border-radius: 5px;
-                    font-family: monospace;
-                    font-size: 12px;
-                    z-index: 9999;
-                    max-width: 300px;
-                    display: none;
                 }
             `;
             document.head.appendChild(style);
-            
-            // Создаем элемент для отображения информации
-            const infoDiv = document.createElement('div');
-            infoDiv.id = 'inspector-info';
-            infoDiv.className = 'inspector-info';
-            document.body.appendChild(infoDiv);
             
             let highlightedElement = null;
             
@@ -396,27 +386,10 @@ class WebBrowser(QWidget):
                 
                 element.classList.add('inspector-highlight');
                 highlightedElement = element;
-                
-                // Показываем информацию об элементе
-                const info = getElementInfo(element);
-                const infoDiv = document.getElementById('inspector-info');
-                infoDiv.innerHTML = `
-                    <strong>Tag:</strong> ${info.tagName}<br>
-                    <strong>ID:</strong> ${info.id}<br>
-                    <strong>Class:</strong> ${info.className}<br>
-                    <strong>Position:</strong> ${info.position.x}, ${info.position.y}<br>
-                    <strong>Size:</strong> ${info.position.width}x${info.position.height}<br>
-                    <strong>Text:</strong> ${info.text}
-                `;
-                infoDiv.style.display = 'block';
             }
             
-            // Функция для скрытия информации
-            function hideInfo() {
-                const infoDiv = document.getElementById('inspector-info');
-                if (infoDiv) {
-                    infoDiv.style.display = 'none';
-                }
+            // Функция для скрытия подсветки
+            function hideHighlight() {
                 if (highlightedElement) {
                     highlightedElement.classList.remove('inspector-highlight');
                     highlightedElement = null;
@@ -436,26 +409,28 @@ class WebBrowser(QWidget):
                 e.stopPropagation();
                 
                 const info = getElementInfo(e.target);
-                console.log('=== ELEMENT INSPECTOR ===');
-                console.log('Tag:', info.tagName);
-                console.log('ID:', info.id);
-                console.log('Class:', info.className);
-                console.log('Text:', e.target.textContent);
-                console.log('Position:', info.position);
-                console.log('Styles:', info.styles);
-                console.log('HTML:', e.target.outerHTML);
-                console.log('=======================');
                 
-                // Выводим в консоль браузера
-                alert('Информация об элементе выведена в консоль (F12)');
+                // Отправляем информацию в Python консоль через специальный сигнал
+                window.inspectorElementClicked = {
+                    tagName: info.tagName,
+                    id: info.id,
+                    className: info.className,
+                    text: e.target.textContent,
+                    position: info.position,
+                    styles: info.styles,
+                    html: e.target.outerHTML
+                };
+                
+                // Вызываем Python функцию для отключения режима инспектора
+                window.inspectorModeDisable = true;
             });
             
             // Обработчик выхода из элемента
             document.addEventListener('mouseout', function(e) {
-                // Небольшая задержка, чтобы информация не мигала
+                // Небольшая задержка, чтобы подсветка не мигала
                 setTimeout(() => {
                     if (!document.querySelector('.inspector-highlight:hover')) {
-                        hideInfo();
+                        hideHighlight();
                     }
                 }, 100);
             });
@@ -464,31 +439,77 @@ class WebBrowser(QWidget):
         """)
         
         print("Inspector Mode включен")
+        
+        # Запускаем проверку на клик
+        self._start_inspector_click_check()
     
     def disable_inspector_mode(self):
         """Отключает режим инспектора"""
         # Удаляем JavaScript для режима инспектора
         self.web_view.page().runJavaScript("""
             // Удаляем стили
-            const existingStyle = document.getElementById('inspector-mode-style');
-            if (existingStyle) {
-                existingStyle.remove();
+            const inspectorStyle = document.getElementById('inspector-mode-style');
+            if (inspectorStyle) {
+                inspectorStyle.remove();
             }
             
-            // Удаляем информационный элемент
-            const infoDiv = document.getElementById('inspector-info');
-            if (infoDiv) {
-                infoDiv.remove();
-            }
-            
-            // Убираем подсветку
+            // Убираем подсветку со всех элементов
             const highlightedElements = document.querySelectorAll('.inspector-highlight');
             highlightedElements.forEach(el => {
                 el.classList.remove('inspector-highlight');
             });
             
-            // Удаляем обработчики событий (это сложно сделать полностью, но можно перезагрузить страницу)
+            // Очищаем глобальные переменные
+            window.inspectorElementClicked = null;
+            window.inspectorModeDisable = false;
+            
             console.log('Inspector Mode отключен');
         """)
         
         print("Inspector Mode отключен")
+    
+    def _start_inspector_click_check(self):
+        """Запускает проверку на клик в режиме инспектора"""
+        from PyQt6.QtCore import QTimer
+        
+        def check_click():
+            if self.inspector_mode:
+                # Проверяем, был ли клик
+                self.web_view.page().runJavaScript("window.inspectorElementClicked", self._handle_inspector_click)
+                # Проверяем, нужно ли отключить режим
+                self.web_view.page().runJavaScript("window.inspectorModeDisable", self._handle_inspector_disable)
+                
+                # Продолжаем проверку
+                QTimer.singleShot(100, check_click)
+        
+        # Запускаем проверку
+        QTimer.singleShot(100, check_click)
+    
+    def _handle_inspector_click(self, result):
+        """Обрабатывает клик в режиме инспектора"""
+        if result and isinstance(result, dict):
+            print("\n" + "="*50)
+            print("ELEMENT INSPECTOR")
+            print("="*50)
+            print(f"Tag: {result.get('tagName', 'N/A')}")
+            print(f"ID: {result.get('id', 'N/A')}")
+            print(f"Class: {result.get('className', 'N/A')}")
+            print(f"Text: {result.get('text', 'N/A')[:100]}...")
+            print(f"Position: x={result.get('position', {}).get('x', 'N/A')}, y={result.get('position', {}).get('y', 'N/A')}")
+            print(f"Size: {result.get('position', {}).get('width', 'N/A')}x{result.get('position', {}).get('height', 'N/A')}")
+            print(f"HTML: {result.get('html', 'N/A')[:200]}...")
+            print("="*50 + "\n")
+            
+            # Очищаем результат клика
+            self.web_view.page().runJavaScript("window.inspectorElementClicked = null")
+    
+    def _handle_inspector_disable(self, result):
+        """Обрабатывает команду отключения режима инспектора"""
+        if result:
+            # Отключаем режим инспектора
+            self.inspector_mode = False
+            self.inspector_button.setChecked(False)
+            self.disable_inspector_mode()
+            
+            # Очищаем флаг отключения
+            self.web_view.page().runJavaScript("window.inspectorModeDisable = false")
