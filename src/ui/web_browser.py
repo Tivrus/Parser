@@ -332,11 +332,12 @@ class WebBrowser(QWidget):
         
         # Добавляем JavaScript для режима инспектора
         self.web_view.page().runJavaScript("""
-            // Удаляем старые стили и обработчики если они есть
-            const oldStyle = document.getElementById('inspector-mode-style');
-            if (oldStyle) {
-                oldStyle.remove();
-            }
+            (function() {
+                // Удаляем старые стили и обработчики если они есть
+                const oldStyle = document.getElementById('inspector-mode-style');
+                if (oldStyle) {
+                    oldStyle.remove();
+                }
             
             // Добавляем CSS для подсветки элементов
             const style = document.createElement('style');
@@ -524,15 +525,25 @@ class WebBrowser(QWidget):
                 }
             }
             
-            // Обработчик движения мыши
-            document.addEventListener('mouseover', function(e) {
+            // Удаляем старые обработчики если они есть
+            if (window.inspectorMouseOverHandler) {
+                document.removeEventListener('mouseover', window.inspectorMouseOverHandler);
+            }
+            if (window.inspectorClickHandler) {
+                document.removeEventListener('click', window.inspectorClickHandler);
+            }
+            if (window.inspectorMouseOutHandler) {
+                document.removeEventListener('mouseout', window.inspectorMouseOutHandler);
+            }
+            
+            // Создаем новые обработчики
+            window.inspectorMouseOverHandler = function(e) {
                 if (e.target !== document.body && e.target !== document.documentElement) {
                     highlightElement(e.target);
                 }
-            });
+            };
             
-            // Обработчик клика
-            document.addEventListener('click', function(e) {
+            window.inspectorClickHandler = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -546,24 +557,31 @@ class WebBrowser(QWidget):
                     text: e.target.textContent,
                     position: info.position,
                     styles: info.styles,
-                    html: e.target.outerHTML
+                    html: e.target.outerHTML,
+                    xpath: info.xpath,
+                    allStyles: info.allStyles
                 };
                 
                 // Вызываем Python функцию для отключения режима инспектора
                 window.inspectorModeDisable = true;
-            });
+            };
             
-            // Обработчик выхода из элемента
-            document.addEventListener('mouseout', function(e) {
+            window.inspectorMouseOutHandler = function(e) {
                 // Небольшая задержка, чтобы подсветка не мигала
                 setTimeout(() => {
                     if (!document.querySelector('.inspector-highlight:hover')) {
                         hideHighlight();
                     }
                 }, 100);
-            });
+            };
+            
+            // Добавляем обработчики
+            document.addEventListener('mouseover', window.inspectorMouseOverHandler);
+            document.addEventListener('click', window.inspectorClickHandler);
+            document.addEventListener('mouseout', window.inspectorMouseOutHandler);
             
             console.log('Inspector Mode включен. Наведите мышь на элементы для их подсветки, кликните для получения информации.');
+            })();
         """)
         
         print("Inspector Mode включен")
@@ -575,8 +593,8 @@ class WebBrowser(QWidget):
         """Отключает режим инспектора"""
         # Удаляем JavaScript для режима инспектора
         self.web_view.page().runJavaScript("""
-            // Удаляем стили
             (function() {
+                // Удаляем стили
                 const styleElement = document.getElementById('inspector-mode-style');
                 if (styleElement) {
                     styleElement.remove();
@@ -587,6 +605,20 @@ class WebBrowser(QWidget):
                 highlightedElements.forEach(function(el) {
                     el.classList.remove('inspector-highlight');
                 });
+                
+                // Удаляем обработчики событий
+                if (window.inspectorMouseOverHandler) {
+                    document.removeEventListener('mouseover', window.inspectorMouseOverHandler);
+                    window.inspectorMouseOverHandler = null;
+                }
+                if (window.inspectorClickHandler) {
+                    document.removeEventListener('click', window.inspectorClickHandler);
+                    window.inspectorClickHandler = null;
+                }
+                if (window.inspectorMouseOutHandler) {
+                    document.removeEventListener('mouseout', window.inspectorMouseOutHandler);
+                    window.inspectorMouseOutHandler = null;
+                }
                 
                 // Очищаем глобальные переменные
                 window.inspectorElementClicked = null;
