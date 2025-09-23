@@ -43,7 +43,6 @@
     "top_bar_submenu_Inspector_Mode": "Режим инспектора",
     "top_bar_submenu_Run_Script": "Запустить скрипт",
     "top_bar_submenu_Stop_Execution": "Остановить выполнение",
-    "top_bar_submenu_Auto_Align_Blocks": "Автоматически выровнять блоки",
     "top_bar_submenu_Open_Dev_Tools": "Открыть Dev Tools",
     "top_bar_submenu_Reload_Site": "Перезагрузить сайт",
 
@@ -68,6 +67,7 @@
     "button_cancel": "Отмена",
     "button_save": "Сохранить",
     "button_discard": "Не сохранять",
+    "button_go": "Перейти",
     "window_save_discard_message": "У вас есть несохраненные изменения",
     "window_save_discard_question": "Хотите сохранить текущий проект?",
     "window_settings_title": "Настройки",
@@ -128,7 +128,6 @@
     "top_bar_submenu_Inspector_Mode": "Inspector Mode",
     "top_bar_submenu_Run_Script": "Run Script",
     "top_bar_submenu_Stop_Execution": "Stop Execution",
-    "top_bar_submenu_Auto_Align_Blocks": "Auto Align Blocks",
     "top_bar_submenu_Open_Dev_Tools": "Open Dev Tools",
     "top_bar_submenu_Reload_Site": "Reload Site",
     
@@ -153,6 +152,7 @@
     "button_cancel": "Cancel",
     "button_save": "Save",
     "button_discard": "Don't Save",
+    "button_go": "Go",
     "window_save_discard_message": "You have unsaved changes.",
     "window_save_discard_question": "Do you want to save the current project?",
     "window_settings_title": "Settings",

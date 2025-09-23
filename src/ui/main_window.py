@@ -7,6 +7,7 @@ from ..core.title_manager import _TITLE_MANAGER
 from ..core.text_manager import get_text, set_language, get_current_language
 from ..core.app_settings_manager import _APP_SETTINGS
 from .menu_system import MenuSystem
+from .workspace import Workspace
 
 
 class MainWindow(QMainWindow):
@@ -35,37 +36,14 @@ class MainWindow(QMainWindow):
         menubar = self.menuBar()
         self.menu_system.create_menus(menubar)
         
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
+        # Создаем рабочую область
+        self.workspace = Workspace()
+        self.setCentralWidget(self.workspace)
         
-        layout = QVBoxLayout(central_widget)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(20)
+        # Добавляем кнопку для тестирования изменений в статус-бар
+        self.statusBar().showMessage("Готов к работе")
         
-        content_label = QLabel("Основная рабочая область")
-        content_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        content_label.setStyleSheet("font-size: 16px; color: #666666;")
-        layout.addWidget(content_label)
         
-        # Кнопка для тестирования изменений
-        test_button = QPushButton("Симулировать изменения")
-        test_button.clicked.connect(self._simulate_changes)
-        test_button.setStyleSheet("""
-            QPushButton {
-                background-color: #28A745;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #218838;
-            }
-        """)
-        layout.addWidget(test_button)
-        
-        layout.addStretch()
     
     def refresh_menus(self):
         menubar = self.menuBar()
@@ -87,6 +65,10 @@ class MainWindow(QMainWindow):
         """)
         
         self.menu_system._update_menu_colors()
+        
+        # Обновляем тему рабочей области
+        if hasattr(self, 'workspace'):
+            self.update_workspace_theme()
     
     def _load_app_settings(self):
         """Загружает настройки приложения"""
@@ -111,6 +93,24 @@ class MainWindow(QMainWindow):
             self.menu_system.checkboxes["top_bar_submenu_ShowGrid"].setChecked(show_grid)
         if "top_bar_submenu_SnapToGrid" in self.menu_system.checkboxes:
             self.menu_system.checkboxes["top_bar_submenu_SnapToGrid"].setChecked(snap_to_grid)
+    
+    def update_workspace_theme(self):
+        """Обновляет тему рабочей области"""
+        if hasattr(self, 'workspace'):
+            # Обновляем тему веб-браузера
+            if hasattr(self.workspace, 'right_panel'):
+                self.workspace.right_panel.apply_theme()
+            
+            # Обновляем тему левой панели
+            if hasattr(self.workspace, 'left_panel'):
+                self.workspace.left_panel.apply_theme()
+    
+    def update_workspace_language(self):
+        """Обновляет язык рабочей области"""
+        if hasattr(self, 'workspace'):
+            # Обновляем язык веб-браузера
+            if hasattr(self.workspace, 'right_panel'):
+                self.workspace.right_panel.update_button_texts()
     
     def closeEvent(self, event: QCloseEvent):
         """Обрабатывает событие закрытия окна"""

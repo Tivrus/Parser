@@ -99,6 +99,10 @@ class SettingsWindow(BaseWindow):
             self.parent().menu_system.language = new_language
             self.parent().menu_system._load_configurations()
             self.parent().refresh_menus()
+            
+            # Обновляем язык рабочей области
+            if hasattr(self.parent(), 'update_workspace_language'):
+                self.parent().update_workspace_language()
     
     def _on_theme_changed(self, text):
         is_light = text == "Светлая"

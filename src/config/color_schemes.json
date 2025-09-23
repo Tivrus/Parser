@@ -44,6 +44,37 @@
       "background": "#2D2D30",
       "text": "#FFFFFF",
       "border": "#464647"
+    },
+    "workspace": {
+      "background": "#1E1E1E",
+      "text": "#FFFFFF",
+      "border": "#333333"
+    },
+    "web_browser": {
+      "background": "#1E1E1E",
+      "text": "#FFFFFF",
+      "border": "#333333",
+      "input_background": "#2D2D30",
+      "input_border": "#464647",
+      "input_focus": "#007ACC",
+      "button_background": "#2D2D30",
+      "button_border": "#464647",
+      "button_hover": "#404040",
+      "button_pressed": "#505050"
+    },
+    "panel": {
+      "background": "#1E1E1E",
+      "text": "#FFFFFF",
+      "border": "#333333",
+      "title_background": "#2D2D30",
+      "title_text": "#FFFFFF",
+      "title_border": "#464647",
+      "placeholder_background": "#2D2D30",
+      "placeholder_border": "#464647"
+    },
+    "splitter": {
+      "handle": "#333333",
+      "handle_hover": "#007ACC"
     }
   },
   "light": {
@@ -91,6 +122,37 @@
       "background": "#FFFFFF",
       "text": "#333333",
       "border": "#E1E1E1"
+    },
+    "workspace": {
+      "background": "#FFFFFF",
+      "text": "#333333",
+      "border": "#E1E1E1"
+    },
+    "web_browser": {
+      "background": "#FFFFFF",
+      "text": "#333333",
+      "border": "#E1E1E1",
+      "input_background": "#FFFFFF",
+      "input_border": "#CCCCCC",
+      "input_focus": "#007ACC",
+      "button_background": "#F8F8F8",
+      "button_border": "#CCCCCC",
+      "button_hover": "#E0E0E0",
+      "button_pressed": "#D0D0D0"
+    },
+    "panel": {
+      "background": "#FFFFFF",
+      "text": "#333333",
+      "border": "#E1E1E1",
+      "title_background": "#F8F8F8",
+      "title_text": "#333333",
+      "title_border": "#CCCCCC",
+      "placeholder_background": "#F8F8F8",
+      "placeholder_border": "#CCCCCC"
+    },
+    "splitter": {
+      "handle": "#CCCCCC",
+      "handle_hover": "#007ACC"
     }
   }
 }

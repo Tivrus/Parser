@@ -60,7 +60,6 @@
         {"type": "button", "id": "top_bar_submenu_Run_Script", "icon": "RunScript.png"},
         {"type": "button", "id": "top_bar_submenu_Stop_Execution", "icon": "StopExecution.png"},
         {"type": "separator"},
-        {"type": "button", "id": "top_bar_submenu_Auto_Align_Blocks", "icon": "AutoAlignBlocks.png"},
         {"type": "button", "id": "top_bar_submenu_Open_Dev_Tools", "icon": "OpenDevTools.png"},
         {"type": "button", "id": "top_bar_submenu_Reload_Site", "icon": "ReloadSite.png"}
       ]
