@@ -121,6 +121,12 @@ class MenuSystem:
                 self._update_theme()
         elif action_id in ["top_bar_submenu_AutoSave", "top_bar_submenu_ShowGrid", "top_bar_submenu_SnapToGrid"]:
             self._handle_checkbox_toggle(action_id)
+        elif action_id == "top_bar_submenu_Open_Dev_Tools":
+            self._handle_open_dev_tools()
+        elif action_id == "top_bar_submenu_Reload_Site":
+            self._handle_reload_page()
+        elif action_id == "top_bar_submenu_Inspector_Mode":
+            self._handle_inspector_mode()
         else:
             self._handle_general_action(action_id)
     
@@ -360,3 +366,24 @@ class MenuSystem:
                 if item_config.get("id") == item_id and item_config.get("type") == item_type:
                     return item_config.get("icon", "")
         return ""
+    
+    def _handle_open_dev_tools(self) -> None:
+        """Открывает инструменты разработчика в браузере"""
+        if hasattr(self.parent, 'workspace') and hasattr(self.parent.workspace, 'right_panel'):
+            web_browser = self.parent.workspace.right_panel
+            if hasattr(web_browser, 'open_dev_tools'):
+                web_browser.open_dev_tools()
+    
+    def _handle_reload_page(self) -> None:
+        """Перезагружает текущую страницу в браузере"""
+        if hasattr(self.parent, 'workspace') and hasattr(self.parent.workspace, 'right_panel'):
+            web_browser = self.parent.workspace.right_panel
+            if hasattr(web_browser, 'reload_page'):
+                web_browser.reload_page()
+    
+    def _handle_inspector_mode(self) -> None:
+        """Переключает режим инспектора в браузере"""
+        if hasattr(self.parent, 'workspace') and hasattr(self.parent.workspace, 'right_panel'):
+            web_browser = self.parent.workspace.right_panel
+            if hasattr(web_browser, 'toggle_inspector_mode'):
+                web_browser.toggle_inspector_mode()
