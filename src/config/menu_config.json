@@ -48,9 +48,7 @@
         {"type": "button", "id": "top_bar_submenu_Reset_Zoom", "icon": "ResetZoom.png"},
         {"type": "separator"},
         {"type": "checkbox", "id": "top_bar_submenu_Toggle_Grid", "default": true},
-        {"type": "checkbox", "id": "top_bar_submenu_Toggle_Snap_to_Grid", "default": true},
-        {"type": "separator"},
-        {"type": "checkbox", "id": "top_bar_submenu_Light_Theme", "default": false}
+        {"type": "checkbox", "id": "top_bar_submenu_Toggle_Snap_to_Grid", "default": true}
       ]
     },
     {

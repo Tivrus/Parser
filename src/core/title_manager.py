@@ -1,22 +1,8 @@
-"""
-Менеджер заголовка окна приложения.
-
-Система как в Blender: [*] ProjectName - Path - ApplicationName
-Обеспечивает динамическое обновление заголовка окна в зависимости от состояния проекта.
-"""
 from pathlib import Path
 from typing import Optional
 
 
 class TitleManager:
-    """
-    Класс для управления заголовком главного окна приложения.
-    
-    Основные функции:
-    - Отслеживание состояния проекта (новый, сохранен, изменен)
-    - Динамическое обновление заголовка окна
-    - Форматирование заголовка в стиле Blender
-    """
     
     def __init__(self, app_name: str = "Parser"):
         """
@@ -31,7 +17,6 @@ class TitleManager:
         self.is_modified = False
         self._main_window = None
     
-    # === УПРАВЛЕНИЕ ГЛАВНЫМ ОКНОМ ===
     
     def set_main_window(self, main_window):
         """
@@ -43,13 +28,11 @@ class TitleManager:
         self._main_window = main_window
         self._update_title()
     
-    # === УПРАВЛЕНИЕ ПРОЕКТАМИ ===
     
     def new_project(self):
-        """Создает новый проект."""
         self.project_name = "untitled"
         self.project_path = None
-        self.is_modified = True
+        self.is_modified = False
         self._update_title()
     
     def open_project(self, file_path: str):
@@ -88,7 +71,6 @@ class TitleManager:
         self.is_modified = modified
         self._update_title()
     
-    # === ГЕТТЕРЫ ===
     
     def get_project_path(self) -> Optional[str]:
         """
@@ -135,10 +117,8 @@ class TitleManager:
         """
         return self._format_title()
     
-    # === ВНУТРЕННИЕ МЕТОДЫ ===
     
     def _update_title(self):
-        """Обновляет заголовок главного окна."""
         if not self._main_window:
             return
         
@@ -154,24 +134,18 @@ class TitleManager:
         """
         title_parts = []
         
-        # 1. Звездочка для несохраненных изменений
         if self.is_modified:
             title_parts.append("*")
         
-        # 2. Название проекта
         title_parts.append(self.project_name)
         
-        # 3. Путь к проекту (если сохранен)
         if self.project_path:
-            # Показываем только директорию, не полный путь
             project_dir = Path(self.project_path).parent
             title_parts.append(f"- {project_dir}")
         
-        # 4. Название приложения
         title_parts.append(f"- {self.app_name}")
         
         return " ".join(title_parts)
 
 
-# Глобальный экземпляр менеджера заголовка
 _TITLE_MANAGER = TitleManager()

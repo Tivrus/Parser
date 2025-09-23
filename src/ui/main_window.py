@@ -1,137 +1,78 @@
-"""
-Главное окно приложения
-"""
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QCloseEvent
 from ..core.theme_manager import _THEME
 from ..core.window_router import WindowRouter
 from ..core.title_manager import _TITLE_MANAGER
 from ..core.text_manager import get_text, set_language, get_current_language
+from ..core.app_settings_manager import _APP_SETTINGS
 from .menu_system import MenuSystem
 
 
 class MainWindow(QMainWindow):
-    """Главное окно приложения"""
     
     def __init__(self):
-        """Инициализация главного окна"""
         super().__init__()
         self.setGeometry(100, 100, 1200, 800)
         
-        # Инициализируем компоненты
-        self.menu_system = MenuSystem(self, language="ru")
+        # Загружаем настройки приложения
+        self._load_app_settings()
+        
+        # Инициализируем компоненты с настройками
+        language = _APP_SETTINGS.get_setting("language", "ru")
+        self.menu_system = MenuSystem(self, language=language)
         self.window_router = WindowRouter()
         
-        # Устанавливаем TitleManager
         _TITLE_MANAGER.set_main_window(self)
-        _TITLE_MANAGER.new_project()  # Создаем новый проект по умолчанию
+        _TITLE_MANAGER.new_project()
         
         self.setup_ui()
         self.apply_theme()
-        
-        # Разворачиваем окно на весь экран
+        self._sync_menu_checkboxes()
         self.showMaximized()
     
     def setup_ui(self):
-        """Настройка пользовательского интерфейса"""
-        # Create menu bar
         menubar = self.menuBar()
         self.menu_system.create_menus(menubar)
         
-        # Create central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        # Create main layout
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(20)
         
-        # Create language toggle button
-        self.create_language_toggle(layout)
-        
-        # Add your main content here
         content_label = QLabel("Основная рабочая область")
         content_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         content_label.setStyleSheet("font-size: 16px; color: #666666;")
         layout.addWidget(content_label)
         
-        # Add stretch to push content to top
-        layout.addStretch()
-    
-    def create_language_toggle(self, parent_layout):
-        """Создает кнопку переключения языка"""
-        # Create horizontal layout for language toggle
-        lang_layout = QHBoxLayout()
-        lang_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
-        
-        # Create language toggle button
-        self.language_button = QPushButton()
-        self.language_button.setFixedSize(100, 35)
-        self.language_button.clicked.connect(self.toggle_language)
-        
-        # Set initial language
-        self.update_language_button()
-        
-        # Style the button
-        self.language_button.setStyleSheet("""
+        # Кнопка для тестирования изменений
+        test_button = QPushButton("Симулировать изменения")
+        test_button.clicked.connect(self._simulate_changes)
+        test_button.setStyleSheet("""
             QPushButton {
-                background-color: #007ACC;
+                background-color: #28A745;
                 color: white;
                 border: none;
-                border-radius: 6px;
+                padding: 8px 16px;
+                border-radius: 4px;
                 font-weight: bold;
-                font-size: 12px;
             }
             QPushButton:hover {
-                background-color: #005A9E;
-            }
-            QPushButton:pressed {
-                background-color: #004080;
+                background-color: #218838;
             }
         """)
+        layout.addWidget(test_button)
         
-        lang_layout.addWidget(self.language_button)
-        parent_layout.addLayout(lang_layout)
-    
-    def toggle_language(self):
-        """Переключает язык интерфейса"""
-        current_lang = get_current_language()
-        new_lang = "en" if current_lang == "ru" else "ru"
-        
-        # Set new language
-        set_language(new_lang)
-        
-        # Update language button text
-        self.update_language_button()
-        
-        # Update menu system language
-        self.menu_system.language = new_lang
-        self.menu_system._load_configurations()
-        
-        # Refresh menus to apply new language
-        self.refresh_menus()
-    
-    def update_language_button(self):
-        """Обновляет текст кнопки языка"""
-        current_lang = get_current_language()
-        if current_lang == "ru":
-            self.language_button.setText(get_text("button_language_en"))
-        else:
-            self.language_button.setText(get_text("button_language_ru"))
+        layout.addStretch()
     
     def refresh_menus(self):
-        """Обновляет меню для применения нового языка"""
-        # Clear existing menu bar
         menubar = self.menuBar()
         menubar.clear()
-        
-        # Recreate menus with new language
         self.menu_system.create_menus(menubar)
     
     def apply_theme(self):
-        """Применяет тему к главному окну"""
-        # Apply main window theme
         colors = _THEME.get_all_colors("main_window")
         bg_color = colors.get("background", "#FFFFFF")
         
@@ -145,5 +86,54 @@ class MainWindow(QMainWindow):
             }}
         """)
         
-        # Update menu colors
         self.menu_system._update_menu_colors()
+    
+    def _load_app_settings(self):
+        """Загружает настройки приложения"""
+        # Загружаем язык
+        language = _APP_SETTINGS.get_setting("language", "ru")
+        set_language(language)
+        
+        # Загружаем тему
+        theme = _APP_SETTINGS.get_setting("theme", "dark")
+        is_light = theme == "light"
+        _THEME.set_theme(is_light)
+    
+    def _sync_menu_checkboxes(self):
+        """Синхронизирует чекбоксы меню с настройками"""
+        auto_save = _APP_SETTINGS.get_setting("auto_save", True)
+        show_grid = _APP_SETTINGS.get_setting("show_grid", True)
+        snap_to_grid = _APP_SETTINGS.get_setting("snap_to_grid", True)
+        
+        if "top_bar_submenu_AutoSave" in self.menu_system.checkboxes:
+            self.menu_system.checkboxes["top_bar_submenu_AutoSave"].setChecked(auto_save)
+        if "top_bar_submenu_ShowGrid" in self.menu_system.checkboxes:
+            self.menu_system.checkboxes["top_bar_submenu_ShowGrid"].setChecked(show_grid)
+        if "top_bar_submenu_SnapToGrid" in self.menu_system.checkboxes:
+            self.menu_system.checkboxes["top_bar_submenu_SnapToGrid"].setChecked(snap_to_grid)
+    
+    def closeEvent(self, event: QCloseEvent):
+        """Обрабатывает событие закрытия окна"""
+        if _TITLE_MANAGER.has_unsaved_changes():
+            from ..windows.save_discard_window import SaveDiscardWindow
+            
+            dialog = SaveDiscardWindow(self)
+            dialog.exec()
+            
+            choice = dialog.get_user_choice()
+            
+            if choice == 'cancel':
+                event.ignore()
+                return
+            elif choice == 'discard':
+                pass  # Просто закрываем
+            elif choice == 'save':
+                # Сохранение уже обработано в диалоге
+                pass
+        
+        event.accept()
+    
+    def _simulate_changes(self):
+        """Симулирует изменения в проекте для тестирования"""
+        _TITLE_MANAGER.set_modified(True)
+        print("Проект помечен как измененный")

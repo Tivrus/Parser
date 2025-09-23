@@ -1,13 +1,9 @@
-"""
-Модуль для загрузки конфигураций из JSON файлов
-"""
 import json
 from typing import Dict, Any
 from pathlib import Path
 
 
 class ConfigLoader:
-    """Класс для загрузки конфигураций из JSON файлов"""
     
     def __init__(self, config_dir: str = None):
         """
@@ -17,7 +13,6 @@ class ConfigLoader:
             config_dir: Путь к директории с конфигурациями
         """
         if config_dir is None:
-            # Определяем путь к директории config относительно текущего файла
             current_dir = Path(__file__).parent
             config_dir = current_dir.parent / "config"
         
@@ -59,10 +54,7 @@ class ConfigLoader:
     
 
 
-# Глобальный экземпляр загрузчика конфигураций
 _config_loader = ConfigLoader()
-
-# Функции для быстрого доступа к конфигурациям
 def load_menu_config() -> Dict[str, Any]:
     """Загружает конфигурацию меню"""
     return _config_loader.load_menu_config()

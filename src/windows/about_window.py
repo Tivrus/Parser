@@ -1,19 +1,13 @@
-"""
-Окно "О программе"
-"""
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from .base_window import BaseWindow
 
 
 class AboutWindow(BaseWindow):
-    """Окно информации о программе"""
     
     def __init__(self, parent=None, width=480, height=560):
-        """Инициализация окна "О программе" """
         super().__init__(parent, "О приложении", width, height)
     
     def create_content(self):
-        """Создает содержимое окна "О программе" """
         content = QWidget()
         layout = QVBoxLayout(content)
         layout.setContentsMargins(24, 24, 24, 24)

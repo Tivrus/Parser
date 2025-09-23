@@ -1,22 +1,8 @@
-"""
-Менеджер текстов приложения.
-
-Обеспечивает централизованное управление текстами через ID,
-автоматический перевод через файл локализации.
-"""
 from typing import Dict, Any
 from .config_loader import load_localization
 
 
 class TextManager:
-    """
-    Класс для управления текстами приложения через ID.
-    
-    Основные функции:
-    - Получение текстов по ID из файла локализации
-    - Автоматический перевод на текущий язык
-    - Fallback на ID если перевод не найден
-    """
     
     def __init__(self, language: str = "ru"):
         """
@@ -56,23 +42,18 @@ class TextManager:
         Returns:
             Переведенный текст или сам ID если перевод не найден
         """
-        # Получаем переводы для текущего языка
         language_data = self.localization.get(self.current_language, {})
-        
-        # Ищем текст по ID
         translated_text = language_data.get(text_id)
         
         if translated_text:
             return translated_text
         
-        # Если перевод не найден, пробуем русский как fallback
         if self.current_language != "ru":
             ru_data = self.localization.get("ru", {})
             translated_text = ru_data.get(text_id)
             if translated_text:
                 return translated_text
         
-        # Если нигде не найден, возвращаем сам ID
         return text_id
     
     def get_text_with_params(self, text_id: str, **params) -> str:
@@ -88,11 +69,9 @@ class TextManager:
         """
         text = self.get_text(text_id)
         
-        # Подставляем параметры в текст
         try:
             return text.format(**params)
         except (KeyError, ValueError):
-            # Если не удалось подставить параметры, возвращаем исходный текст
             return text
     
     def has_text(self, text_id: str) -> bool:
@@ -105,12 +84,10 @@ class TextManager:
         Returns:
             True если текст найден
         """
-        # Проверяем в текущем языке
         language_data = self.localization.get(self.current_language, {})
         if text_id in language_data:
             return True
         
-        # Проверяем в русском как fallback
         if self.current_language != "ru":
             ru_data = self.localization.get("ru", {})
             if text_id in ru_data:
@@ -134,15 +111,10 @@ class TextManager:
         return self.localization.get(language, {})
     
     def reload_localization(self):
-        """Перезагружает файл локализации."""
         self.localization = load_localization()
 
 
-# Глобальный экземпляр менеджера текстов
 _TEXT_MANAGER = TextManager()
-
-
-# Функции для быстрого доступа
 def get_text(text_id: str) -> str:
     """
     Получает текст по ID.

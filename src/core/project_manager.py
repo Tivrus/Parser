@@ -1,9 +1,3 @@
-"""
-Менеджер проектов приложения.
-
-Обеспечивает управление проектами, сохранение в папку Downloads,
-отслеживание последних проектов и интеграцию с заголовком окна.
-"""
 import os
 import json
 from pathlib import Path
@@ -11,45 +5,43 @@ from typing import List, Dict, Any
 
 
 class ProjectManager:
-    """
-    Менеджер проектов для управления файлами проектов.
-    
-    Основные функции:
-    - Сохранение/открытие проектов в папке Downloads
-    - Отслеживание последних 5 проектов
-    - Интеграция с TitleManager для обновления заголовка окна
-    """
     
     def __init__(self):
-        """Инициализация менеджера проектов."""
         self.projects_dir = Path.home() / "Downloads"
-        # Используем файл recent_projects.json из папки config
         config_dir = Path(__file__).parent.parent / "config"
         self.recent_projects_file = config_dir / "recent_projects.json"
         self.max_recent_files = 5
-        
-        # Создаем директорию проектов если её нет
         self._ensure_projects_directory()
     
     def _ensure_projects_directory(self) -> None:
-        """Создает директорию проектов если она не существует."""
         self.projects_dir.mkdir(parents=True, exist_ok=True)
     
-    # === ФАЙЛОВЫЕ ДИАЛОГИ ===
     
-    def get_save_file_path(self, parent_widget=None) -> str:
+    def get_save_file_path(self, parent_widget=None, default_name: str = None) -> str:
         """
         Открывает диалог сохранения файла.
         
         Args:
             parent_widget: Родительский виджет для диалога
+            default_name: Название файла по умолчанию (если None, используется "new_project")
             
         Returns:
             Путь к файлу для сохранения или пустая строка если отменено
         """
         from PyQt6.QtWidgets import QFileDialog
         
-        default_path = str(self.projects_dir / "new_project.json")
+        if default_name is None:
+            from .title_manager import _TITLE_MANAGER
+            project_name = _TITLE_MANAGER.get_project_name()
+            if project_name == "untitled":
+                default_name = "untitled"
+            else:
+                default_name = project_name
+        
+        if not default_name.endswith('.json'):
+            default_name += '.json'
+        
+        default_path = str(self.projects_dir / default_name)
         file_path, _ = QFileDialog.getSaveFileName(
             parent_widget,
             "Сохранить проект",
@@ -78,7 +70,6 @@ class ProjectManager:
         )
         return file_path
     
-    # === УПРАВЛЕНИЕ ПРОЕКТАМИ ===
     
     def save_project(self, file_path: str, project_data: Dict[str, Any] = None, 
                      parent_widget=None) -> bool:
@@ -102,7 +93,6 @@ class ProjectManager:
             
             self.add_recent_project(file_path)
             self._update_title_manager_save(file_path)
-            
             print(f"Проект сохранен: {Path(file_path).name}")
             return True
             
@@ -126,13 +116,11 @@ class ProjectManager:
             return False
         
         try:
-            # Загружаем данные проекта
             with open(file_path, 'r', encoding='utf-8') as f:
                 project_data = json.load(f)
             
             self.add_recent_project(file_path)
             self._update_title_manager_open(file_path)
-            
             print(f"Проект открыт: {Path(file_path).name}")
             return True
             
@@ -147,14 +135,17 @@ class ProjectManager:
         Returns:
             Словарь с данными проекта по умолчанию
         """
+        from .title_manager import _TITLE_MANAGER
+        
+        project_name = _TITLE_MANAGER.get_project_name()
+        
         return {
-            "name": "New Project",
+            "name": project_name,
             "created": "2024-01-01",
             "version": "1.0.0",
             "data": {}
         }
     
-    # === УПРАВЛЕНИЕ ПОСЛЕДНИМИ ПРОЕКТАМИ ===
     
     def add_recent_project(self, file_path: str) -> None:
         """
@@ -169,16 +160,9 @@ class ProjectManager:
         recent_projects = self.get_recent_projects()
         project_info = self._create_project_info(file_path)
         
-        # Удаляем если уже есть (по пути)
         recent_projects = [p for p in recent_projects if p.get("path") != file_path]
-        
-        # Добавляем в начало списка
         recent_projects.insert(0, project_info)
-        
-        # Ограничиваем количество
         recent_projects = recent_projects[:self.max_recent_files]
-        
-        # Сохраняем
         self._save_recent_projects(recent_projects)
     
     def get_recent_projects(self) -> List[Dict[str, str]]:
@@ -228,7 +212,7 @@ class ProjectManager:
             Словарь с информацией о проекте
         """
         return {
-            "name": Path(file_path).stem,  # Имя файла без расширения
+            "name": Path(file_path).stem,
             "path": file_path
         }
     
@@ -248,7 +232,6 @@ class ProjectManager:
             if isinstance(project_info, dict) and os.path.exists(project_info.get("path", "")):
                 existing_projects.append(project_info)
             elif isinstance(project_info, str) and os.path.exists(project_info):
-                # Совместимость со старым форматом
                 existing_projects.append(self._create_project_info(project_info))
         
         return existing_projects
@@ -261,7 +244,6 @@ class ProjectManager:
             recent_projects: Список словарей с информацией о проектах
         """
         try:
-            # Создаем директорию если её нет
             self.recent_projects_file.parent.mkdir(parents=True, exist_ok=True)
             
             with open(self.recent_projects_file, 'w', encoding='utf-8') as f:
@@ -269,7 +251,6 @@ class ProjectManager:
         except IOError as e:
             print(f"Ошибка сохранения списка последних проектов: {e}")
     
-    # === ИНТЕГРАЦИЯ С TITLE MANAGER ===
     
     def _update_title_manager_save(self, file_path: str) -> None:
         """
@@ -292,5 +273,4 @@ class ProjectManager:
         _TITLE_MANAGER.open_project(file_path)
 
 
-# Глобальный экземпляр менеджера проектов
 _PROJECT_MANAGER = ProjectManager()

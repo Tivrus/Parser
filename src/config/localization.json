@@ -36,9 +36,6 @@
     "top_bar_submenu_Reset_Zoom": "Сбросить масштаб",
     "top_bar_submenu_Toggle_Grid": "Показать сетку",
     "top_bar_submenu_Toggle_Snap_to_Grid": "Показать привязку к сетке",
-    "top_bar_submenu_Light_Theme": "Светлая тема",
-    "top_bar_submenu_Dark_Theme": "Тёмная тема",
-    
 
     
     "top_bar_menu_Tools": "Инструменты",
@@ -71,10 +68,9 @@
     "button_cancel": "Отмена",
     "button_save": "Сохранить",
     "button_discard": "Не сохранять",
-    "window_save_discard_title": "Сохранить проект?",
-    "window_save_discard_message": "У вас есть несохраненные изменения.",
+    "window_save_discard_message": "У вас есть несохраненные изменения",
     "window_save_discard_question": "Хотите сохранить текущий проект?",
-    "window_settings_title": "Настройки приложения",
+    "window_settings_title": "Настройки",
     "window_settings_auto_save": "Автосохранение",
     "window_settings_light_theme": "Светлая тема",
     "window_settings_show_grid": "Показывать сетку",
@@ -124,7 +120,6 @@
     "top_bar_submenu_Reset_Zoom": "Reset Zoom",
     "top_bar_submenu_Toggle_Grid": "Toggle Grid",
     "top_bar_submenu_Toggle_Snap_to_Grid": "Toggle Snap to Grid",
-    "top_bar_submenu_Light_Theme": "Light Theme",
     
     
 
@@ -158,10 +153,9 @@
     "button_cancel": "Cancel",
     "button_save": "Save",
     "button_discard": "Don't Save",
-    "window_save_discard_title": "Save Project?",
     "window_save_discard_message": "You have unsaved changes.",
     "window_save_discard_question": "Do you want to save the current project?",
-    "window_settings_title": "Application Settings",
+    "window_settings_title": "Settings",
     "window_settings_auto_save": "Auto Save",
     "window_settings_light_theme": "Light Theme",
     "window_settings_show_grid": "Show Grid",

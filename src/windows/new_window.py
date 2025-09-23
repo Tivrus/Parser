@@ -1,6 +1,3 @@
-"""
-Окно создания нового проекта
-"""
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout
 from PyQt6.QtCore import Qt
 from .base_window import BaseWindow
@@ -8,26 +5,21 @@ from ..core.text_manager import get_text
 
 
 class NewWindow(BaseWindow):
-    """Окно создания нового проекта"""
     
     def __init__(self, parent=None, width=400, height=300):
-        """Инициализация окна создания нового проекта"""
         super().__init__(parent, get_text("window_new_title"), width, height)
         self.project_created = False
     
     def create_content(self):
-        """Создает содержимое окна создания нового проекта"""
         content = QWidget()
         layout = QVBoxLayout(content)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
         
-        # Заголовок
         title_label = QLabel(get_text("window_new_create_project"))
         title_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 16px;")
         layout.addWidget(title_label)
         
-        # Поле для названия проекта
         name_label = QLabel(get_text("window_new_project_name"))
         layout.addWidget(name_label)
         
@@ -36,7 +28,6 @@ class NewWindow(BaseWindow):
         self.name_input.setText(get_text("window_new_title"))
         layout.addWidget(self.name_input)
         
-        # Описание
         desc_label = QLabel(get_text("window_new_project_desc"))
         layout.addWidget(desc_label)
         
@@ -44,7 +35,6 @@ class NewWindow(BaseWindow):
         self.desc_input.setPlaceholderText(get_text("window_new_project_desc_placeholder"))
         layout.addWidget(self.desc_input)
         
-        # Кнопки
         button_layout = QHBoxLayout()
         
         create_button = QPushButton(get_text("button_create"))
@@ -62,18 +52,15 @@ class NewWindow(BaseWindow):
         return content
     
     def _create_project(self):
-        """Создает новый проект"""
         project_name = self.name_input.text().strip()
         if not project_name:
             project_name = get_text("window_new_title")
         
         project_desc = self.desc_input.text().strip()
         
-        # Создаем новый проект
         from ..core.title_manager import _TITLE_MANAGER
         _TITLE_MANAGER.new_project()
         
-        # Устанавливаем название проекта если пользователь ввел его
         if project_name != get_text("window_new_title"):
             _TITLE_MANAGER.project_name = project_name
             _TITLE_MANAGER._update_title()
